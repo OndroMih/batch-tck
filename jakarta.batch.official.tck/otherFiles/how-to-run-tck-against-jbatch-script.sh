@@ -18,10 +18,13 @@ set -x
 ################
 
 # 1. Root location of TCK execution - Also useful for holding this script itself, and its output logs
-TCK_HOME_DIR=~/jkbatch/
+#TCK_HOME_DIR=~/jkbatch/
+TCK_HOME_DIR="/home/omihalyi/workspaces/JakartaEE/Jakarta EE specs/Batch/batch-tck-run"
+TCK_SRC_DIR="/home/omihalyi/workspaces/JakartaEE/Jakarta EE specs/Batch/batch-tck"
 
 # 2. Point to JAVA_HOME so that the signature test command below can find the runtime JAR (rt.jar):
-export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.212.b04-0.el7_6.x86_64/jre/
+#export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.212.b04-0.el7_6.x86_64/jre/
+export JAVA_HOME=/home/omihalyi/.sdkman/candidates/java/8.0.232-zulu/jre
 
 #------------------------------------------------------------------------------------------------------
 # NOTE: Since these are Maven coordinates of already-released artifacts, we take the shortcut of
@@ -34,11 +37,11 @@ export JAVA_HOME=/usr/lib/jvm/java-1.8.0-openjdk-1.8.0.212.b04-0.el7_6.x86_64/jr
 #------------------------------------------------------------------------------------------------------
 # 3. Copy required JARs obtained via other mechanisms
 REQUIRED_JARS="\
- /home/ibmadmin/.m2/repository/org/apache/derby/derby/10.10.1.1/derby-10.10.1.1.jar \
- /home/ibmadmin/.m2/repository/com/ibm/jbatch/com.ibm.jbatch.container/1.0.3/com.ibm.jbatch.container-1.0.3.jar \
- /home/ibmadmin/.m2/repository/com/ibm/jbatch/com.ibm.jbatch.spi/1.0.3/com.ibm.jbatch.spi-1.0.3.jar \
- /home/ibmadmin/.m2/repository/net/java/sigtest/sigtestdev/3.0-b12-v20140219/sigtestdev-3.0-b12-v20140219.jar \
- /home/ibmadmin/.m2/repository/jakarta/batch/jakarta.batch-api/1.0.2/jakarta.batch-api-1.0.2.jar \
+ /home/omihalyi/.m2/repository/org/apache/derby/derby/10.10.1.1/derby-10.10.1.1.jar \
+ /home/omihalyi/.m2/repository/com/ibm/jbatch/com.ibm.jbatch.container/1.0.3/com.ibm.jbatch.container-1.0.3.jar \
+ /home/omihalyi/.m2/repository/com/ibm/jbatch/com.ibm.jbatch.spi/1.0.3/com.ibm.jbatch.spi-1.0.3.jar \
+ /home/omihalyi/.m2/repository/net/java/sigtest/sigtestdev/3.0-b12-v20140219/sigtestdev-3.0-b12-v20140219.jar \
+ /home/omihalyi/.m2/repository/jakarta/batch/jakarta.batch-api/1.0.2/jakarta.batch-api-1.0.2.jar \
 "
 
 #--------------------------------------------------
@@ -73,14 +76,15 @@ TCK_DOWNLOAD_URL=https://download.eclipse.org/jakartaee/batch/1.0/eclipse-batch-
 ################
 # DON'T CHANGE
 ################
-cd $TCK_HOME_DIR
+cd "$TCK_HOME_DIR"
 
 #
 # get TCK zip into an empty directory
 #
 rm -rf tckdir; mkdir tckdir; cd tckdir
 ls -la .
-wget $TCK_DOWNLOAD_URL
+#wget $TCK_DOWNLOAD_URL
+cp "$TCK_SRC_DIR/jakarta.batch.official.tck/target/jakarta.batch.official.tck-1.0.2.zip" .
 
 #
 # copy prereqs into an empty directory

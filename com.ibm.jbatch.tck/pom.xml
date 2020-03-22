@@ -1,24 +1,24 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-   Copyright 2012 International Business Machines Corp.
+  Copyright 2012 International Business Machines Corp.
 
-   See the NOTICE file distributed with this work for additional information
-   regarding copyright ownership. Licensed under the Apache License,
-   Version 2.0 (the "License"); you may not use this file except in compliance
-   with the License. You may obtain a copy of the License at
+  See the NOTICE file distributed with this work for additional information
+  regarding copyright ownership. Licensed under the Apache License,
+  Version 2.0 (the "License"); you may not use this file except in compliance
+  with the License. You may obtain a copy of the License at
 
-     http://www.apache.org/licenses/LICENSE-2.0
+    http://www.apache.org/licenses/LICENSE-2.0
 
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
 
-   SPDX-License-Identifier: Apache-2.0
- -->
+  SPDX-License-Identifier: Apache-2.0
+-->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>jakarta.batch</groupId>
@@ -31,6 +31,23 @@
     <packaging>jar</packaging>
     <version>1.0.2</version>
     <name>Jakarta Batch TCK Core Test Artifacts</name>
+
+    <properties>
+        <weld.api.version>3.1.SP2</weld.api.version>
+        <weld.core.version>3.1.3.Final</weld.core.version>
+    </properties>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.jboss.arquillian</groupId>
+                <artifactId>arquillian-bom</artifactId>
+                <version>1.6.0.Final</version>
+                <scope>import</scope>
+                <type>pom</type>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
     <dependencies>
         <dependency>
@@ -75,6 +92,35 @@
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.container</groupId>
+            <artifactId>arquillian-weld-embedded</artifactId>
+            <version>2.0.1.Final</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.arquillian.testng</groupId>
+            <artifactId>arquillian-testng-container</artifactId>            
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-api</artifactId>
+            <version>${weld.api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-spi</artifactId>
+            <version>${weld.api.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jboss.weld</groupId>
+            <artifactId>weld-core-impl</artifactId>
+            <version>${weld.core.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <pluginRepositories>
@@ -114,9 +160,9 @@
                             </configuration>
                         </execution>
                         <!-- By failing when the newly-generated batch.xml changes, we force someone to review
-                             the changes.   We purposely don't want to make it too easy to introduce a change here, 
-                             since this will ultimately affect the pass/failing of implementations' runs against the TCK.
-                             This will add as a guard that the person who would make the update knows what they're doing. -->
+                        the changes.   We purposely don't want to make it too easy to introduce a change here, 
+                        since this will ultimately affect the pass/failing of implementations' runs against the TCK.
+                        This will add as a guard that the person who would make the update knows what they're doing. -->
                         <execution>
                             <id>generate-batch.xml</id>
                             <goals>
@@ -152,8 +198,8 @@
                             </configuration>
                         </execution>
                         <!-- Updating the signature files should not be done lightly.  This changes the specified, public API. 
-                             We purposely make this fail by default when a signature is changed, to ensure
-                             that the person who would make the update knows what they're doing. -->
+                        We purposely make this fail by default when a signature is changed, to ensure
+                        that the person who would make the update knows what they're doing. -->
                         <execution>
                             <id>generate-sigtest</id>
                             <goals>
@@ -163,8 +209,8 @@
                             <configuration>
                                 <target>
                                     <!-- Note this simply uses the JRE level of the JRE executing Maven and generates the correspondng .sig file.
-                                         So to generate the Java 6, 7, 8 .sig files you have to actually run Maven using Java 6, 7, 8, respectively, 
-                                         once for each.  You can't just generate them all at once. -->
+                                    So to generate the Java 6, 7, 8 .sig files you have to actually run Maven using Java 6, 7, 8, respectively, 
+                                    once for each.  You can't just generate them all at once. -->
                                     <condition property="jdk" value="6">
                                         <contains string="${ant.java.version}" substring="1.6"/>
                                     </condition>
@@ -237,13 +283,13 @@
                     </archive>
                 </configuration>
             </plugin>
-              <plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
-                      <skipTests>true</skipTests>
+                    <skipTests>true</skipTests>
                 </configuration>
-              </plugin>
+            </plugin>
         </plugins>
     </build>
     <profiles>
@@ -270,7 +316,9 @@
             <id>batchXML</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
-                <property><name>batchXML</name></property>
+                <property>
+                    <name>batchXML</name>
+                </property>
             </activation>
             <build>
                 <plugins>
@@ -291,7 +339,9 @@
             <id>sigtest</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
-                <property><name>sigtest</name></property>
+                <property>
+                    <name>sigtest</name>
+                </property>
             </activation>
             <build>
                 <plugins>
