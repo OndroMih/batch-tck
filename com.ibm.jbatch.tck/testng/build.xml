@@ -59,7 +59,7 @@
     </target>
 
     <target name="init">
-         <loadproperties srcFile="batch-tck.properties"/>
+         <loadproperties srcFile="../src/main/resources/testng/batch-tck.properties"/>
     </target>
 
     <target name="clean">
