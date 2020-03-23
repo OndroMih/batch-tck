@@ -18,6 +18,7 @@
  */
 package com.ibm.jbatch.tck.tests.jslxml;
 
+import com.ibm.jbatch.tck.tests.AbstractTest;
 import static com.ibm.jbatch.tck.utils.AssertionUtils.assertWithMessage;
 
 import java.util.Properties;
@@ -32,34 +33,33 @@ import org.testng.annotations.Test;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
 
-public class BatchletRestartStateMachineTests {
+public class BatchletRestartStateMachineTests extends AbstractTest {
 
-	private static JobOperatorBridge jobOp = null;
+    private static JobOperatorBridge jobOp = null;
 
-	public static void setup(String[] args, Properties props) throws Exception {
+    public static void setup(String[] args, Properties props) throws Exception {
 
-		String METHOD = "setup";
+        String METHOD = "setup";
 
-		try {
-			jobOp = new JobOperatorBridge();
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
-	}
+        try {
+            jobOp = new JobOperatorBridge();
+        } catch (Exception e) {
+            handleException(METHOD, e);
+        }
+    }
 
-	@BeforeMethod
-	@BeforeClass
-	public static void setUp() throws Exception {
-		jobOp = new JobOperatorBridge();
-	}
+    @BeforeMethod
+    @BeforeClass
+    public static void setUp() throws Exception {
+        jobOp = new JobOperatorBridge();
+    }
 
-	/* cleanup */
-	public void  cleanup()
-	{		
+    /* cleanup */
+    public void cleanup() {
 
-	}
+    }
 
-	/*
+    /*
 	 * @testName: testTransitionElementOnAttrValuesWithRestartJobParamOverrides
 	 * @assertion: 1) Tests Exit Status globbing against transition elements @on value 
 	 *             2) Shows that the @on values are overrideable on restart, and the persisted exit status in matched against the @on values coming
@@ -107,93 +107,93 @@ public class BatchletRestartStateMachineTests {
 	 * Note that because we reuse the same batchlet across the three steps we perform some validation in 
 	 * the batchlet, using the stepName and the execution number (as restart parameter), so that we validate we're never called
 	 * in the wrong step in the wrong execution (e.g. in execution.number N we shouldn't be in step S).
-	 */
-	@Test
-	@org.junit.Test
-	public void testTransitionElementOnAttrValuesWithRestartJobParamOverrides() throws Exception {
+     */
+    @Test
+    @org.junit.Test
+    public void testTransitionElementOnAttrValuesWithRestartJobParamOverrides() throws Exception {
 
-		String METHOD = "testTransitionElementOnAttrValuesWithRestartJobParamOverrides";
+        String METHOD = "testTransitionElementOnAttrValuesWithRestartJobParamOverrides";
 
-		String EXECUTION2_EXPECTED_EXIT_STATUS_FROM_JSL_ATTRIBUTE = "EXPECTED_FAILURE";
-		try {
+        String EXECUTION2_EXPECTED_EXIT_STATUS_FROM_JSL_ATTRIBUTE = "EXPECTED_FAILURE";
+        try {
 
-			TCKJobExecutionWrapper execution1 = null;
-			TCKJobExecutionWrapper execution2 = null;
-			TCKJobExecutionWrapper execution3 = null;
+            TCKJobExecutionWrapper execution1 = null;
+            TCKJobExecutionWrapper execution2 = null;
+            TCKJobExecutionWrapper execution3 = null;
 
-			// Create new block to facilitate copy-pasting without inadvertent errors
-			{
-				Reporter.log("Create job parameters for execution #1:<p>");
-				Properties jobParams = new Properties();
-				Reporter.log("execution.number=1<p>");
-				jobParams.setProperty("execution.number", "1");
-				jobParams.setProperty("step1.stop", "ES.STEP1");
-				jobParams.setProperty("step1.next", "ES.XXX");
-				jobParams.setProperty("step2.fail", "ES.STEP2");
-				jobParams.setProperty("step2.next", "ES.XXX");
+            // Create new block to facilitate copy-pasting without inadvertent errors
+            {
+                Reporter.log("Create job parameters for execution #1:<p>");
+                Properties jobParams = new Properties();
+                Reporter.log("execution.number=1<p>");
+                jobParams.setProperty("execution.number", "1");
+                jobParams.setProperty("step1.stop", "ES.STEP1");
+                jobParams.setProperty("step1.next", "ES.XXX");
+                jobParams.setProperty("step2.fail", "ES.STEP2");
+                jobParams.setProperty("step2.next", "ES.XXX");
 
-				Reporter.log("Invoke startJobAndWaitForResult");
-				execution1 = jobOp.startJobAndWaitForResult("overrideOnAttributeValuesUponRestartBatchlet", jobParams);
+                Reporter.log("Invoke startJobAndWaitForResult");
+                execution1 = jobOp.startJobAndWaitForResult("overrideOnAttributeValuesUponRestartBatchlet", jobParams);
 
-				Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-				Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
-				assertWithMessage("Testing execution #1", BatchStatus.STOPPED, execution1.getBatchStatus());
-				assertWithMessage("Testing execution #1", "STOPPED", execution1.getExitStatus());
-			}
+                Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+                Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+                assertWithMessage("Testing execution #1", BatchStatus.STOPPED, execution1.getBatchStatus());
+                assertWithMessage("Testing execution #1", "STOPPED", execution1.getExitStatus());
+            }
 
-			{
-				Reporter.log("Create job parameters for execution #2:<p>");
-				Properties restartJobParameters = new Properties();
-				Reporter.log("execution.number=2<p>");
-				Reporter.log("step1.stop=ES.STOP<p>");
-				Reporter.log("step1.next=ES.STEP1<p>");
-				restartJobParameters.setProperty("execution.number", "2");
-				restartJobParameters.setProperty("step1.stop", "ES.STOP");
-				restartJobParameters.setProperty("step1.next", "ES.STEP1");
-				restartJobParameters.setProperty("step2.fail", "ES.STEP2");
-				restartJobParameters.setProperty("step2.next", "ES.STEP2");
-				Reporter.log("Invoke restartJobAndWaitForResult with executionId: " + execution1.getExecutionId() + "<p>");
-				execution2 = jobOp.restartJobAndWaitForResult(execution1.getExecutionId(),restartJobParameters);				
-				Reporter.log("execution #2 JobExecution getBatchStatus()="+execution2.getBatchStatus()+"<p>");
-				Reporter.log("execution #2 JobExecution getExitStatus()="+execution2.getExitStatus()+"<p>");
-				assertWithMessage("Testing execution #2", BatchStatus.FAILED, execution2.getBatchStatus());
-				// See JSL snippet above for where "SUCCESS" comes from
-				assertWithMessage("Testing execution #2", EXECUTION2_EXPECTED_EXIT_STATUS_FROM_JSL_ATTRIBUTE, execution2.getExitStatus());				
-			}
+            {
+                Reporter.log("Create job parameters for execution #2:<p>");
+                Properties restartJobParameters = new Properties();
+                Reporter.log("execution.number=2<p>");
+                Reporter.log("step1.stop=ES.STOP<p>");
+                Reporter.log("step1.next=ES.STEP1<p>");
+                restartJobParameters.setProperty("execution.number", "2");
+                restartJobParameters.setProperty("step1.stop", "ES.STOP");
+                restartJobParameters.setProperty("step1.next", "ES.STEP1");
+                restartJobParameters.setProperty("step2.fail", "ES.STEP2");
+                restartJobParameters.setProperty("step2.next", "ES.STEP2");
+                Reporter.log("Invoke restartJobAndWaitForResult with executionId: " + execution1.getExecutionId() + "<p>");
+                execution2 = jobOp.restartJobAndWaitForResult(execution1.getExecutionId(), restartJobParameters);
+                Reporter.log("execution #2 JobExecution getBatchStatus()=" + execution2.getBatchStatus() + "<p>");
+                Reporter.log("execution #2 JobExecution getExitStatus()=" + execution2.getExitStatus() + "<p>");
+                assertWithMessage("Testing execution #2", BatchStatus.FAILED, execution2.getBatchStatus());
+                // See JSL snippet above for where "SUCCESS" comes from
+                assertWithMessage("Testing execution #2", EXECUTION2_EXPECTED_EXIT_STATUS_FROM_JSL_ATTRIBUTE, execution2.getExitStatus());
+            }
 
-			{
-				Reporter.log("Create job parameters for execution #3:<p>");
-				Properties restartJobParameters = new Properties();
-				Reporter.log("execution.number=3<p>");
-				Reporter.log("step1.stop=ES.STOP<p>");
-				Reporter.log("step1.next=ES.STEP1<p>");
-				Reporter.log("step2.fail=ES.FAIL<p>");
-				Reporter.log("step2.next=ES.STEP2<p>");
-				restartJobParameters.setProperty("execution.number", "3");
-				restartJobParameters.setProperty("step1.stop", "ES.STOP");
-				restartJobParameters.setProperty("step1.next", "ES.STEP1");
-				restartJobParameters.setProperty("step2.fail", "ES.FAIL");
-				restartJobParameters.setProperty("step2.next", "ES.STEP2");
-				Reporter.log("Invoke restartJobAndWaitForResult with executionId: " + execution2.getExecutionId() + "<p>");
-				execution3 = jobOp.restartJobAndWaitForResult(execution2.getExecutionId(),restartJobParameters);
-				Reporter.log("execution #3 JobExecution getBatchStatus()="+execution3.getBatchStatus()+"<p>");
-				Reporter.log("execution #3 JobExecution getExitStatus()="+execution3.getExitStatus()+"<p>");				
-				assertWithMessage("Testing execution #3", BatchStatus.COMPLETED, execution3.getBatchStatus());
-				assertWithMessage("Testing execution #3", "COMPLETED", execution3.getExitStatus());  
-			}
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
+            {
+                Reporter.log("Create job parameters for execution #3:<p>");
+                Properties restartJobParameters = new Properties();
+                Reporter.log("execution.number=3<p>");
+                Reporter.log("step1.stop=ES.STOP<p>");
+                Reporter.log("step1.next=ES.STEP1<p>");
+                Reporter.log("step2.fail=ES.FAIL<p>");
+                Reporter.log("step2.next=ES.STEP2<p>");
+                restartJobParameters.setProperty("execution.number", "3");
+                restartJobParameters.setProperty("step1.stop", "ES.STOP");
+                restartJobParameters.setProperty("step1.next", "ES.STEP1");
+                restartJobParameters.setProperty("step2.fail", "ES.FAIL");
+                restartJobParameters.setProperty("step2.next", "ES.STEP2");
+                Reporter.log("Invoke restartJobAndWaitForResult with executionId: " + execution2.getExecutionId() + "<p>");
+                execution3 = jobOp.restartJobAndWaitForResult(execution2.getExecutionId(), restartJobParameters);
+                Reporter.log("execution #3 JobExecution getBatchStatus()=" + execution3.getBatchStatus() + "<p>");
+                Reporter.log("execution #3 JobExecution getExitStatus()=" + execution3.getExitStatus() + "<p>");
+                assertWithMessage("Testing execution #3", BatchStatus.COMPLETED, execution3.getBatchStatus());
+                assertWithMessage("Testing execution #3", "COMPLETED", execution3.getExitStatus());
+            }
+        } catch (Exception e) {
+            handleException(METHOD, e);
+        }
 
-	}
+    }
 
-	/*
+    /*
 	 * Obviously would be nicer to have more granular tests for some of this function,
 	 * but here we're going a different route and saying, if it's going to require
 	 * restart it will have some complexity, so let's test a few different functions
 	 * in one longer restart scenario.
-	 */
-	/*
+     */
+ /*
 	 * @testName: testAllowStartIfCompleteRestartExecution
 	 * @assertion:    1. @restart attribute on <stop> transition element
 	 *           :    2. tests difference between allow-start-if-complete = true or false (default)
@@ -233,49 +233,49 @@ public class BatchletRestartStateMachineTests {
 	 * Note that because we reuse the same batchlet across the three steps we perform some validation in 
 	 * the batchlet, using the stepName and the execution number (as restart parameter), so that we validate we're never called
 	 * in the wrong step in the wrong execution (e.g. in execution.number N we shouldn't be in step S).
-	 */
-	@Test
-	@org.junit.Test
-	public void testAllowStartIfCompleteRestartExecution() throws Exception {
+     */
+    @Test
+    @org.junit.Test
+    public void testAllowStartIfCompleteRestartExecution() throws Exception {
 
-		String METHOD = "testAllowStartIfCompleteRestartExecution";
+        String METHOD = "testAllowStartIfCompleteRestartExecution";
 
-		try {
-			long lastExecutionId = 0L;
-			TCKJobExecutionWrapper exec = null;
+        try {
+            long lastExecutionId = 0L;
+            TCKJobExecutionWrapper exec = null;
 
-			for (int i = 1; i <= 6; i++) {
-				String execString = new Integer(i).toString();
-				Properties jobParameters = new Properties();
-				jobParameters.put("execution.number", execString);
-				if (i == 1) {
-					Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
-					exec = jobOp.startJobAndWaitForResult("batchletRestartStateMachine", jobParameters);
-				} else {
-					Reporter.log("Invoke restartJobAndWaitForResult<p>");
-					exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParameters);
-				}
-				lastExecutionId = exec.getExecutionId();
+            for (int i = 1; i <= 6; i++) {
+                String execString = new Integer(i).toString();
+                Properties jobParameters = new Properties();
+                jobParameters.put("execution.number", execString);
+                if (i == 1) {
+                    Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+                    exec = jobOp.startJobAndWaitForResult("batchletRestartStateMachine", jobParameters);
+                } else {
+                    Reporter.log("Invoke restartJobAndWaitForResult<p>");
+                    exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParameters);
+                }
+                lastExecutionId = exec.getExecutionId();
 
-				Reporter.log("Execution #" + i + " JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
-				Reporter.log("Execution #" + i + " JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
-				if (i == 6) {
-					assertWithMessage("Testing execution #" + i, BatchStatus.COMPLETED, exec.getBatchStatus());
-				} else {
-					assertWithMessage("Testing execution #" + i, BatchStatus.STOPPED, exec.getBatchStatus());
-				}
-				assertWithMessage("Testing execution #" + i, "EXECUTION." + execString, exec.getExitStatus());
-			}
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
+                Reporter.log("Execution #" + i + " JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
+                Reporter.log("Execution #" + i + " JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
+                if (i == 6) {
+                    assertWithMessage("Testing execution #" + i, BatchStatus.COMPLETED, exec.getBatchStatus());
+                } else {
+                    assertWithMessage("Testing execution #" + i, BatchStatus.STOPPED, exec.getBatchStatus());
+                }
+                assertWithMessage("Testing execution #" + i, "EXECUTION." + execString, exec.getExitStatus());
+            }
+        } catch (Exception e) {
+            handleException(METHOD, e);
+        }
 
-	}
-	
-	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
-		throw e;
-	}
+    }
+
+    private static void handleException(String methodName, Exception e) throws Exception {
+        Reporter.log("Caught exception: " + e.getMessage() + "<p>");
+        Reporter.log(methodName + " failed<p>");
+        throw e;
+    }
 
 }

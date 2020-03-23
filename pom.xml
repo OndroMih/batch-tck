@@ -146,7 +146,7 @@
         <!-- Dependencies -->
         <version.jakarta.enterprise.jakarta.enterprise.cdi-api>2.0.1</version.jakarta.enterprise.jakarta.enterprise.cdi-api>
         <version.jakarta.inject.jakarta.inject-api>1.0</version.jakarta.inject.jakarta.inject-api>
-        <version.org.testng.testng>6.8.8</version.org.testng.testng>
+        <version.org.testng.testng>6.14.3</version.org.testng.testng>
         <version.com.beust.jcommander>1.60</version.com.beust.jcommander>
         <version.org.sonatype.plugins.nexus-staging-maven-plugin>1.6.6</version.org.sonatype.plugins.nexus-staging-maven-plugin>
         <version.com.mycila.maven-license-plugin.maven-license-plugin>1.10.b1</version.com.mycila.maven-license-plugin.maven-license-plugin>
