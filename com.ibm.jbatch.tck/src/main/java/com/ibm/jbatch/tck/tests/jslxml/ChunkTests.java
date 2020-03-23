@@ -37,6 +37,7 @@ import com.ibm.jbatch.tck.artifacts.specialized.MyMultipleExceptionsRetryReadLis
 import com.ibm.jbatch.tck.artifacts.specialized.MySkipProcessListener;
 import com.ibm.jbatch.tck.artifacts.specialized.MySkipReadListener;
 import com.ibm.jbatch.tck.artifacts.specialized.MySkipWriteListener;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
 
@@ -46,7 +47,7 @@ import org.testng.Reporter;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class ChunkTests {
+public class ChunkTests extends AbstractTest {
 
     private static JobOperatorBridge jobOp = null;
 
