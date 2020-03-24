@@ -32,8 +32,9 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
-public class RestartNotMostRecentTests {
+public class RestartNotMostRecentTests extends AbstractTest {
 	
 	private JobOperatorBridge jobOp = null;
 	

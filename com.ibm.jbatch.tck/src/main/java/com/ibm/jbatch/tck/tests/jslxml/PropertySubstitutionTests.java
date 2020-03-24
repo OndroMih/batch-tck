@@ -26,6 +26,7 @@ import java.util.Properties;
 import javax.batch.runtime.JobExecution;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
 import org.junit.BeforeClass;
 import org.testng.Reporter;
@@ -33,7 +34,7 @@ import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class PropertySubstitutionTests {
+public class PropertySubstitutionTests extends AbstractTest {
 
 	private static JobOperatorBridge jobOp;
 

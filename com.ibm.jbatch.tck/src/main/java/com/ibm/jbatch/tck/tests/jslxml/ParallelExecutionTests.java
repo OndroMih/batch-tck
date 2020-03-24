@@ -39,9 +39,10 @@ import org.testng.annotations.Test;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
 
-public class ParallelExecutionTests {
+public class ParallelExecutionTests extends AbstractTest {
 
 	private final static Logger logger = Logger.getLogger(ParallelExecutionTests.class.getName());
 

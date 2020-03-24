@@ -18,6 +18,7 @@
  */
 package com.ibm.jbatch.tck.tests.jslxml;
 
+import com.ibm.jbatch.tck.tests.AbstractTest;
 import static com.ibm.jbatch.tck.utils.AssertionUtils.assertObjEquals;
 import static com.ibm.jbatch.tck.utils.AssertionUtils.assertWithMessage;
 
@@ -44,7 +45,7 @@ import org.testng.annotations.Test;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
 
-public class JobOperatorTests {
+public class JobOperatorTests extends AbstractTest {
 
 	private final static Logger logger = Logger.getLogger(JobOperatorTests.class.getName());
 

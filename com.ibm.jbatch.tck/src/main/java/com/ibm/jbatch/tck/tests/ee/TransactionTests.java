@@ -18,6 +18,7 @@
  */
 package com.ibm.jbatch.tck.tests.ee;
 
+import com.ibm.jbatch.tck.tests.AbstractTest;
 import static com.ibm.jbatch.tck.utils.AssertionUtils.assertObjEquals;
 import static com.ibm.jbatch.tck.utils.AssertionUtils.assertWithMessage;
 
@@ -33,7 +34,6 @@ import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
 
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.testng.Reporter;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
@@ -41,8 +41,7 @@ import org.testng.annotations.Test;
 
 // Since we don't want to run these in SE, and are only really running TestNG in EE, we
 // can safely do a JUnit @Ignore without missing anything.
-@Ignore
-public class TransactionTests {
+public class TransactionTests extends AbstractTest {
 
 	private final static Logger logger = Logger.getLogger(TransactionTests.class.getName());
 

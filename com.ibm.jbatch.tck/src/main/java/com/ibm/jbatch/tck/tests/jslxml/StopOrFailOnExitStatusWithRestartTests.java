@@ -33,8 +33,9 @@ import org.testng.annotations.Test;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
-public class StopOrFailOnExitStatusWithRestartTests {
+public class StopOrFailOnExitStatusWithRestartTests extends AbstractTest {
 
 	private static JobOperatorBridge jobOp;
 

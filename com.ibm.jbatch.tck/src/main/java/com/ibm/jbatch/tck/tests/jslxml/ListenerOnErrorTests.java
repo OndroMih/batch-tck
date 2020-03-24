@@ -32,9 +32,10 @@ import org.testng.annotations.Test;
 
 import com.ibm.jbatch.tck.ann.*;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
 
-public class ListenerOnErrorTests {
+public class ListenerOnErrorTests extends AbstractTest {
 	private static JobOperatorBridge jobOp = null;
 	
 	@BeforeMethod

@@ -18,6 +18,7 @@
  */
 package com.ibm.jbatch.tck.tests.jslxml;
 
+import com.ibm.jbatch.tck.tests.AbstractTest;
 import static com.ibm.jbatch.tck.utils.AssertionUtils.assertObjEquals;
 import static com.ibm.jbatch.tck.utils.AssertionUtils.assertWithMessage;
 
@@ -37,7 +38,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class ContextAndListenerTests {
+public class ContextAndListenerTests extends AbstractTest {
 
 	private final static Logger logger = Logger.getLogger(ContextAndListenerTests.class.getName());
 	private static JobOperatorBridge jobOp = null;

@@ -36,8 +36,9 @@ import org.testng.annotations.Test;
 
 import com.ibm.jbatch.tck.artifacts.specialized.MetricsStepListener;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
-public class MetricsTests {
+public class MetricsTests extends AbstractTest {
 
 	private static JobOperatorBridge jobOp = null;
 

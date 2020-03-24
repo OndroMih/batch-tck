@@ -35,8 +35,9 @@ import org.testng.annotations.Test;
 
 import com.ibm.jbatch.tck.ann.*;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
-public class PartitionRerunTests {
+public class PartitionRerunTests extends AbstractTest {
 	static JobOperatorBridge jobOp = null;
 
 	private static void handleException(String methodName, Exception e) throws Exception {

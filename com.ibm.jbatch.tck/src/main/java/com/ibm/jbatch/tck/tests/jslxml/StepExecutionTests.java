@@ -36,6 +36,7 @@ import javax.batch.runtime.StepExecution;
 import com.ibm.jbatch.tck.artifacts.reusable.MyBatchletImpl;
 import com.ibm.jbatch.tck.artifacts.reusable.MyPersistentUserData;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
 import org.junit.BeforeClass;
 import org.testng.Reporter;
@@ -43,7 +44,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class StepExecutionTests {
+public class StepExecutionTests extends AbstractTest {
 
 	private final static Logger logger = Logger.getLogger(StepExecutionTests.class.getName());
 

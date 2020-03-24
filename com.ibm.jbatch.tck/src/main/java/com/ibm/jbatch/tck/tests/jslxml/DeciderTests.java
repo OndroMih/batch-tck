@@ -36,8 +36,9 @@ import org.testng.annotations.Test;
 import com.ibm.jbatch.tck.artifacts.common.StatusConstants;
 import com.ibm.jbatch.tck.artifacts.specialized.DeciderTestsBatchlet;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
-public class DeciderTests implements StatusConstants {
+public class DeciderTests extends AbstractTest implements StatusConstants {
 	private final static Logger logger = Logger.getLogger(DeciderTests.class.getName());
 	private static JobOperatorBridge jobOp = null;
 

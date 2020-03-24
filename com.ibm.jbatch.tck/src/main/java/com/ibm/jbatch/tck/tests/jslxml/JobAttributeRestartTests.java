@@ -32,6 +32,7 @@ import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
 import org.junit.Before;
 import org.testng.Reporter;
@@ -39,7 +40,7 @@ import org.testng.annotations.AfterTest;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
-public class JobAttributeRestartTests {
+public class JobAttributeRestartTests extends AbstractTest {
 
 	private JobOperatorBridge jobOp = null;
 

@@ -28,6 +28,7 @@ import javax.batch.runtime.StepExecution;
 
 import com.ibm.jbatch.tck.ann.*;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
 import org.junit.Before;
 import org.testng.Reporter;
@@ -36,7 +37,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 
 
-public class ParallelContextPropagationTests {
+public class ParallelContextPropagationTests extends AbstractTest {
 
 	private static JobOperatorBridge jobOp = null;
 

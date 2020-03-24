@@ -34,8 +34,9 @@ import org.testng.annotations.Test;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
-public class StartLimitTests {
+public class StartLimitTests extends AbstractTest {
 
 	private JobOperatorBridge jobOp = null;
 

@@ -28,6 +28,7 @@ import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import com.ibm.jbatch.tck.tests.AbstractTest;
 
 import org.junit.BeforeClass;
 import org.junit.Ignore;
@@ -36,7 +37,7 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-public class ExecutionTests {
+public class ExecutionTests extends AbstractTest {
 
 	private final static Logger logger = Logger.getLogger(ExecutionTests.class.getName());
 
