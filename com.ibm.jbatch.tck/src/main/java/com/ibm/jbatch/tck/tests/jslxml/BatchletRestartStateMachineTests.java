@@ -22,7 +22,7 @@ import com.ibm.jbatch.tck.tests.AbstractTest;
 import static com.ibm.jbatch.tck.utils.AssertionUtils.assertWithMessage;
 
 import java.util.Properties;
-
+ 
 import javax.batch.runtime.BatchStatus;
 
 import org.junit.BeforeClass;
@@ -55,7 +55,8 @@ public class BatchletRestartStateMachineTests extends AbstractTest {
     }
 
     /* cleanup */
-    public void cleanup() {
+	public void  cleanup()
+	{		
 
     }
 
@@ -135,8 +136,8 @@ public class BatchletRestartStateMachineTests extends AbstractTest {
                 Reporter.log("Invoke startJobAndWaitForResult");
                 execution1 = jobOp.startJobAndWaitForResult("overrideOnAttributeValuesUponRestartBatchlet", jobParams);
 
-                Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-                Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+				Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+				Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
                 assertWithMessage("Testing execution #1", BatchStatus.STOPPED, execution1.getBatchStatus());
                 assertWithMessage("Testing execution #1", "STOPPED", execution1.getExitStatus());
             }
@@ -153,9 +154,9 @@ public class BatchletRestartStateMachineTests extends AbstractTest {
                 restartJobParameters.setProperty("step2.fail", "ES.STEP2");
                 restartJobParameters.setProperty("step2.next", "ES.STEP2");
                 Reporter.log("Invoke restartJobAndWaitForResult with executionId: " + execution1.getExecutionId() + "<p>");
-                execution2 = jobOp.restartJobAndWaitForResult(execution1.getExecutionId(), restartJobParameters);
-                Reporter.log("execution #2 JobExecution getBatchStatus()=" + execution2.getBatchStatus() + "<p>");
-                Reporter.log("execution #2 JobExecution getExitStatus()=" + execution2.getExitStatus() + "<p>");
+				execution2 = jobOp.restartJobAndWaitForResult(execution1.getExecutionId(),restartJobParameters);				
+				Reporter.log("execution #2 JobExecution getBatchStatus()="+execution2.getBatchStatus()+"<p>");
+				Reporter.log("execution #2 JobExecution getExitStatus()="+execution2.getExitStatus()+"<p>");
                 assertWithMessage("Testing execution #2", BatchStatus.FAILED, execution2.getBatchStatus());
                 // See JSL snippet above for where "SUCCESS" comes from
                 assertWithMessage("Testing execution #2", EXECUTION2_EXPECTED_EXIT_STATUS_FROM_JSL_ATTRIBUTE, execution2.getExitStatus());
@@ -175,9 +176,9 @@ public class BatchletRestartStateMachineTests extends AbstractTest {
                 restartJobParameters.setProperty("step2.fail", "ES.FAIL");
                 restartJobParameters.setProperty("step2.next", "ES.STEP2");
                 Reporter.log("Invoke restartJobAndWaitForResult with executionId: " + execution2.getExecutionId() + "<p>");
-                execution3 = jobOp.restartJobAndWaitForResult(execution2.getExecutionId(), restartJobParameters);
-                Reporter.log("execution #3 JobExecution getBatchStatus()=" + execution3.getBatchStatus() + "<p>");
-                Reporter.log("execution #3 JobExecution getExitStatus()=" + execution3.getExitStatus() + "<p>");
+				execution3 = jobOp.restartJobAndWaitForResult(execution2.getExecutionId(),restartJobParameters);
+				Reporter.log("execution #3 JobExecution getBatchStatus()="+execution3.getBatchStatus()+"<p>");
+				Reporter.log("execution #3 JobExecution getExitStatus()="+execution3.getExitStatus()+"<p>");				
                 assertWithMessage("Testing execution #3", BatchStatus.COMPLETED, execution3.getBatchStatus());
                 assertWithMessage("Testing execution #3", "COMPLETED", execution3.getExitStatus());
             }
@@ -257,8 +258,8 @@ public class BatchletRestartStateMachineTests extends AbstractTest {
                 }
                 lastExecutionId = exec.getExecutionId();
 
-                Reporter.log("Execution #" + i + " JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
-                Reporter.log("Execution #" + i + " JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
+				Reporter.log("Execution #" + i + " JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
+				Reporter.log("Execution #" + i + " JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
                 if (i == 6) {
                     assertWithMessage("Testing execution #" + i, BatchStatus.COMPLETED, exec.getBatchStatus());
                 } else {
@@ -273,7 +274,7 @@ public class BatchletRestartStateMachineTests extends AbstractTest {
     }
 
     private static void handleException(String methodName, Exception e) throws Exception {
-        Reporter.log("Caught exception: " + e.getMessage() + "<p>");
+		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
         Reporter.log(methodName + " failed<p>");
         throw e;
     }
