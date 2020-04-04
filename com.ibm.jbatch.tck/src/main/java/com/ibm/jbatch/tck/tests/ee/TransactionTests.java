@@ -39,8 +39,6 @@ import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 
-// Since we don't want to run these in SE, and are only really running TestNG in EE, we
-// can safely do a JUnit @Ignore without missing anything.
 public class TransactionTests extends AbstractTest {
 
 	private final static Logger logger = Logger.getLogger(TransactionTests.class.getName());
