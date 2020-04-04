@@ -1,10 +1,8 @@
 package com.ibm.jbatch.tck.tests;
 
-import java.io.File;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.*;
-import org.jboss.shrinkwrap.api.exporter.ZipExporter;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.jboss.shrinkwrap.resolver.api.maven.*;
 
@@ -32,7 +30,6 @@ public class AbstractTest extends Arquillian {
                 archive = archive.addAsLibrary(artifact.asFile());
             }
         }
-        archive.as(ZipExporter.class).exportTo(new File("/tmp/arquillian.war"), true);
         return archive;
     }
 
