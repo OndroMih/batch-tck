@@ -25,7 +25,7 @@ import javax.batch.api.chunk.listener.RetryReadListener;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
+
 
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
 
@@ -39,7 +39,7 @@ public class NumbersRetryReadListener implements RetryReadListener {
 
 	    @Override
 	    public void onRetryReadException(Exception e) {
-	    	Reporter.log("In onRetryReadException()" + e);
+	    	logger.info("In onRetryReadException()" + e);
 	    	logger.finer("In onRetryReadException()" + e);
 	    	((Properties)stepCtx.getTransientUserData()).setProperty("retry.read.exception.invoked", "true");
 	        if (e instanceof MyParentException){

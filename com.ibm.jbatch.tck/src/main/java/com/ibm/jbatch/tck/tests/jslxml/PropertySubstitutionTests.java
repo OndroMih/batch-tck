@@ -26,38 +26,25 @@ import java.util.Properties;
 import javax.batch.runtime.JobExecution;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
 
-import org.junit.BeforeClass;
-import org.testng.Reporter;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.*;
 
 public class PropertySubstitutionTests {
 
-	private static JobOperatorBridge jobOp;
+	private static final Logger logger = Logger.getLogger(PropertySubstitutionTests.class.getName());
+	private JobOperatorBridge jobOp;
 
-	public static void setup(String[] args, Properties props) throws Exception {
-		String METHOD = "setup";
-
-		try {
-			jobOp = new JobOperatorBridge();
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
-	}
-
-	@BeforeMethod
-	@BeforeClass
-	public static void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		jobOp = new JobOperatorBridge();
 	}
 
-	@AfterMethod
-	public static void tearDown() throws Exception {
+	@AfterEach
+	public void tearDown() throws Exception {
 	}
 
-	@AfterMethod
+	@AfterEach
 	public void cleanup() throws Exception {
 		// Clear this property for next test
 		System.clearProperty("property.junit.result");
@@ -74,21 +61,21 @@ public class PropertySubstitutionTests {
 	 * job xml.
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testBatchArtifactPropertyInjection() throws Exception {
 		String METHOD = "testBatchArtifactPropertyInjection";
 
 		try {
-			Reporter.log("Locate job XML file: job_properties2.xml<p>");
+			logger.info("Locate job XML file: job_properties2.xml<p>");
 
-			Reporter.log("Set system property: property.junit.propName=myProperty1<p>");
+			logger.info("Set system property: property.junit.propName=myProperty1<p>");
 			System.setProperty("property.junit.propName", "myProperty1");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_properties2");
 
 			String result = System.getProperty("property.junit.result");
-			Reporter.log("Test result: " + result + "<p>");
+			logger.info("Test result: " + result + "<p>");
 			assertObjEquals("value1", result);
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -107,22 +94,22 @@ public class PropertySubstitutionTests {
 	 * job xml even if the Java field is initialized.
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testInitializedPropertyIsOverwritten() throws Exception {
 
 		String METHOD = "testInitializedPropertyIsOverwritten";
 
 		try {
-			Reporter.log("Locate job XML file: job_properties2.xml<p>");
+			logger.info("Locate job XML file: job_properties2.xml<p>");
 
-			Reporter.log("Set system property: property.junit.propName=myProperty2<p>");
+			logger.info("Set system property: property.junit.propName=myProperty2<p>");
 			System.setProperty("property.junit.propName", "myProperty2");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_properties2");
 
 			String result = System.getProperty("property.junit.result");
-			Reporter.log("Test result: " + result + "<p>");
+			logger.info("Test result: " + result + "<p>");
 			assertObjEquals("value2", result);
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -140,28 +127,28 @@ public class PropertySubstitutionTests {
 	 * injecting the property into a batch artifact
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testPropertyWithJobParameter() throws Exception {
 
 		String METHOD = "testPropertyWithJobParameter";
 
 		try {
-			Reporter.log("Locate job XML file: job_properties2.xml<p>");
+			logger.info("Locate job XML file: job_properties2.xml<p>");
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParameters = new Properties();
 			String expectedResult = "mySubmittedValue";
-			Reporter.log("mySubmittedPropr=" + expectedResult + "<p>");
+			logger.info("mySubmittedPropr=" + expectedResult + "<p>");
 			jobParameters.setProperty("mySubmittedProp", expectedResult);
 
-			Reporter.log("Set system property: property.junit.propName=mySubmittedProp<p>");
+			logger.info("Set system property: property.junit.propName=mySubmittedProp<p>");
 			System.setProperty("property.junit.propName", "mySubmittedProp");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_properties2", jobParameters);
 
 			String result = System.getProperty("property.junit.result");
-			Reporter.log("Test result: " + result + "<p>");
+			logger.info("Test result: " + result + "<p>");
 			assertObjEquals(expectedResult, result);
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -180,22 +167,22 @@ public class PropertySubstitutionTests {
 	 * value provided through the job xml
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testDefaultPropertyName() throws Exception {
 
 		String METHOD = "testDefaultPropertyName";
 
 		try {
-			Reporter.log("Locate job XML file: job_properties2.xml<p>");
+			logger.info("Locate job XML file: job_properties2.xml<p>");
 
-			Reporter.log("Set system property:property.junit.propName=property4<p>");
+			logger.info("Set system property:property.junit.propName=property4<p>");
 			System.setProperty("property.junit.propName", "property4");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_properties2");
 
 			String result = System.getProperty("property.junit.result");
-			Reporter.log("Test result: " + result + "<p>");
+			logger.info("Test result: " + result + "<p>");
 			assertObjEquals("value4", result);
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -212,22 +199,22 @@ public class PropertySubstitutionTests {
 	 * value provided through the job xml.
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testGivenPropertyName() throws Exception {
 
 		String METHOD = "testGivenPropertyName";
 
 		try {
-			Reporter.log("Locate job XML file: job_properties2.xml<p>");
+			logger.info("Locate job XML file: job_properties2.xml<p>");
 
-			Reporter.log("Set system property:property.junit.propName=myProperty4<p>");
+			logger.info("Set system property:property.junit.propName=myProperty4<p>");
 			System.setProperty("property.junit.propName", "myProperty4");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_properties2");
 
 			String result = System.getProperty("property.junit.result");
-			Reporter.log("Test result: " + result + "<p>");
+			logger.info("Test result: " + result + "<p>");
 			assertObjEquals("value4", result);
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -244,22 +231,22 @@ public class PropertySubstitutionTests {
 	 * Verify that the injected property value is from the artifact level property.
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testPropertyInnerScopePrecedence() throws Exception {
 
 		String METHOD = "testPropertyInnerScopePrecedence";
 
 		try {
-			Reporter.log("Locate job XML file: job_properties2.xml<p>");
+			logger.info("Locate job XML file: job_properties2.xml<p>");
 
-			Reporter.log("Set system property:property.junit.propName=batchletProp<p>");
+			logger.info("Set system property:property.junit.propName=batchletProp<p>");
 			System.setProperty("property.junit.propName", "batchletProp");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_properties2");
 
 			String result = System.getProperty("property.junit.result");
-			Reporter.log("Test result: " + result + "<p>");
+			logger.info("Test result: " + result + "<p>");
 			assertObjEquals("batchletPropValue", result);
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -278,26 +265,26 @@ public class PropertySubstitutionTests {
 	 * batctlet artifact. 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testPropertyQuestionMarkSimple() throws Exception {
 
 		String METHOD = "testPropertyQuestionMarkSimple";
 
 		try {
-			Reporter.log("Locate job XML file: job_properties2.xml<p>");
+			logger.info("Locate job XML file: job_properties2.xml<p>");
 
-			Reporter.log("Set system property:property.junit.propName=defaultPropName1<p>");
+			logger.info("Set system property:property.junit.propName=defaultPropName1<p>");
 			System.setProperty("property.junit.propName", "defaultPropName1");
 
-			Reporter.log("Set system property:file.name.junit=myfile1.txt<p>");
+			logger.info("Set system property:file.name.junit=myfile1.txt<p>");
 			System.setProperty("file.name.junit", "myfile1.txt");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_properties2");
 
 			// String result = jobExec.getStatus();
 			String result = System.getProperty("property.junit.result");
-			Reporter.log("Test result: " + result + "<p>");
+			logger.info("Test result: " + result + "<p>");
 			assertObjEquals("myfile1.txt", result);
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -316,26 +303,26 @@ public class PropertySubstitutionTests {
 	 * batctlet artifact. 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testPropertyQuestionMarkComplex() throws Exception {
 
 		String METHOD = "testPropertyQuestionMarkComplex";
 
 		try {
-			Reporter.log("Locate job XML file: job_properties2.xml<p>");
+			logger.info("Locate job XML file: job_properties2.xml<p>");
 
-			Reporter.log("Set system property:property.junit.propName=defaultPropName2<p>");
+			logger.info("Set system property:property.junit.propName=defaultPropName2<p>");
 			System.setProperty("property.junit.propName", "defaultPropName2");
 
-			Reporter.log("Set system property:file.name.junit=myfile2.txt<p>");
+			logger.info("Set system property:file.name.junit=myfile2.txt<p>");
 			System.setProperty("file.name.junit", "myfile2");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_properties2");
 
 			// String result = jobExec.getStatus();
 			String result = System.getProperty("property.junit.result");
-			Reporter.log("Test result: " + result + "<p>");
+			logger.info("Test result: " + result + "<p>");
 
 			assertObjEquals(File.separator + "myfile2.txt", result);
 		} catch (Exception e) {
@@ -353,27 +340,27 @@ public class PropertySubstitutionTests {
 	 * value provided through the job xml. 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testPropertyWithConcatenation() throws Exception {
 
 		String METHOD = "testPropertyWithConcatenation";
 
 		try {
-			Reporter.log("Locate job XML file: job_properties2.xml<p>");
+			logger.info("Locate job XML file: job_properties2.xml<p>");
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParameters = new Properties();
-			Reporter.log("myFilename=testfile1<p>");
+			logger.info("myFilename=testfile1<p>");
 			jobParameters.setProperty("myFilename", "testfile1");
 
-			Reporter.log("Set system property:file.name.junit=myConcatProp<p>");
+			logger.info("Set system property:file.name.junit=myConcatProp<p>");
 			System.setProperty("property.junit.propName", "myConcatProp");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_properties2", jobParameters);
 
 			String result = System.getProperty("property.junit.result");
-			Reporter.log("Test result: " + result + "<p>");
+			logger.info("Test result: " + result + "<p>");
 			assertObjEquals("testfile1.txt", result);
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -394,29 +381,29 @@ public class PropertySubstitutionTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJavaSystemProperty() throws Exception {
 
 		String METHOD = "testJavaSystemProperty";
 
 		try {
-			Reporter.log("Locate job XML file: job_properties2.xml<p>");
+			logger.info("Locate job XML file: job_properties2.xml<p>");
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParameters = new Properties();
-			Reporter.log("myFilename=testfile2<p>");
+			logger.info("myFilename=testfile2<p>");
 			jobParameters.setProperty("myFilename", "testfile2");
 
-			Reporter.log("Set system property:file.name.junit=myJavaSystemProp<p>");
+			logger.info("Set system property:file.name.junit=myJavaSystemProp<p>");
 			System.setProperty("property.junit.propName", "myJavaSystemProp");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_properties2", jobParameters);
 			String result = System.getProperty("property.junit.result");
 
 			String pathSep = System.getProperty("file.separator");
 
-			Reporter.log("Test result: " + pathSep + "test" + pathSep + "testfile2.txt<p>");
+			logger.info("Test result: " + pathSep + "test" + pathSep + "testfile2.txt<p>");
 			assertObjEquals(pathSep + "test" + pathSep + "testfile2.txt", result);
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -425,8 +412,8 @@ public class PropertySubstitutionTests {
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage() + "<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage() + "<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 }

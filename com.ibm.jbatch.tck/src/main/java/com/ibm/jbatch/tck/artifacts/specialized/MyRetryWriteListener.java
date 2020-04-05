@@ -25,8 +25,6 @@ import javax.batch.api.chunk.listener.RetryWriteListener;
 import javax.batch.runtime.context.JobContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
-
 
 @javax.inject.Named("myRetryWriteListener")
 public class MyRetryWriteListener implements RetryWriteListener {
@@ -38,7 +36,7 @@ public class MyRetryWriteListener implements RetryWriteListener {
 
 	    @Override
 	    public void onRetryWriteException(List w, Exception e) {
-	    	Reporter.log("In onRetryWriteException()" + e);
+	    	logger.info("In onRetryWriteException()" + e);
 	    	jobCtx.setExitStatus("Retry listener invoked");
 	    }
 }

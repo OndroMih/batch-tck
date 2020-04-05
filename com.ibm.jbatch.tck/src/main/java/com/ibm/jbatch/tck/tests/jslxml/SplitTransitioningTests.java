@@ -28,16 +28,13 @@ import javax.batch.operations.JobStartException;
 import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
-import org.junit.Before;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.*;
 
 public class SplitTransitioningTests {
 
+	private static final Logger logger = Logger.getLogger(SplitTransitioningTests.class.getName());
 	private JobOperatorBridge jobOp = null;
 
 	/**
@@ -53,20 +50,20 @@ public class SplitTransitioningTests {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testSplitTransitionToStep() throws Exception {
 
 		String METHOD = "testSplitTransitionToStep";
 
 		try {
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("split_transition_to_step", null);
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 
 			assertWithMessage("Split transitioned to step", "step1", jobExec.getExitStatus());
 
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 		} catch (Exception e) {
 			handleException(METHOD, e); 
 		}
@@ -108,20 +105,20 @@ public class SplitTransitioningTests {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testSplitTransitionToStepOutOfScope() throws Exception {
 
 		String METHOD = "testSplitTransitionToStepOutOfScope";
 
 		try {
-			Reporter.log("starting job");
+			logger.info("starting job");
 			
 			boolean seenException = false;
 			JobExecution jobExec = null;
 			try {
 				jobExec = jobOp.startJobAndWaitForResult("split_transition_to_step_out_of_scope", null);
 			} catch (JobStartException e) {
-				Reporter.log("Caught JobStartException:  " + e.getLocalizedMessage());
+				logger.info("Caught JobStartException:  " + e.getLocalizedMessage());
 				seenException = true;
 			}
 			
@@ -130,7 +127,7 @@ public class SplitTransitioningTests {
 			
 			// If we didn't catch an exception that we require that the implementation fail the job execution.
 			if (!seenException) {
-				Reporter.log("Didn't catch JobstartException, Job Batch Status = " + jobExec.getBatchStatus());
+				logger.info("Didn't catch JobstartException, Job Batch Status = " + jobExec.getBatchStatus());
 				assertWithMessage("Job should have failed because of out of scope execution elements.", BatchStatus.FAILED, jobExec.getBatchStatus());
 			}
 		} catch (Exception e) {
@@ -151,7 +148,7 @@ public class SplitTransitioningTests {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testSplitTransitionToDecision() throws Exception {
 
 		String METHOD = "testSplitTransitionToDecision";
@@ -164,21 +161,21 @@ public class SplitTransitioningTests {
 				<end exit-status="ThatsAllFolks" on="DECIDER_EXIT_STATUS*2" />
 			</decision>
 			 */
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("split_transition_to_decision", null);
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 
 			assertWithMessage("Job Exit Status is from decider", exitStatus, jobExec.getExitStatus());
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -199,13 +196,12 @@ public class SplitTransitioningTests {
 		}
 	} 
 
-	@BeforeTest
-	@Before
+	@BeforeEach
 	public void beforeTest() throws ClassNotFoundException {
 		jobOp = new JobOperatorBridge(); 
 	}
 
-	@AfterTest
+	@AfterEach
 	public void afterTest() {
 		jobOp = null;
 	}

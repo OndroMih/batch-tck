@@ -25,8 +25,6 @@ import javax.batch.runtime.context.JobContext;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
-
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
 
 @javax.inject.Named("mySkipReadListener")
@@ -46,13 +44,13 @@ public class MySkipReadListener implements SkipReadListener {
 
     @Override
     public void onSkipReadItem(Exception e) {
-        Reporter.log("In onSkipReadItem" + e + "<p>");
+        logger.info("In onSkipReadItem" + e + "<p>");
 
         if (e instanceof MyParentException) {
-        	Reporter.log("SKIPLISTENER: onSkipReadItem, exception is an instance of: MyParentException<p>");
+        	logger.info("SKIPLISTENER: onSkipReadItem, exception is an instance of: MyParentException<p>");
             jobCtx.setExitStatus(GOOD_EXIT_STATUS);
         } else {
-        	Reporter.log("SKIPLISTENER: onSkipReadItem, exception is NOT an instance of: MyParentException<p>");
+        	logger.info("SKIPLISTENER: onSkipReadItem, exception is NOT an instance of: MyParentException<p>");
             jobCtx.setExitStatus(BAD_EXIT_STATUS);
         }
     }

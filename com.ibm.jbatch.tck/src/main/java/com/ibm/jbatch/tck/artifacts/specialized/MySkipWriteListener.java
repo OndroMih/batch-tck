@@ -26,8 +26,6 @@ import javax.batch.runtime.context.JobContext;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
-
 import com.ibm.jbatch.tck.artifacts.chunktypes.ReadRecord;
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
 
@@ -48,7 +46,7 @@ public class MySkipWriteListener implements SkipWriteListener {
 
     @Override
     public void onSkipWriteItem(List items, Exception e) {
-        Reporter.log("In onSkipWriteItem()" + e + "<p>");
+        logger.info("In onSkipWriteItem()" + e + "<p>");
         ReadRecord input = null;
         boolean inputOK = false;
         
@@ -62,10 +60,10 @@ public class MySkipWriteListener implements SkipWriteListener {
         }
 
         if (e instanceof MyParentException && inputOK) {
-        	Reporter.log("SKIPLISTENER: onSkipWriteItem, exception is an instance of: MyParentException<p>");
+        	logger.info("SKIPLISTENER: onSkipWriteItem, exception is an instance of: MyParentException<p>");
             jobCtx.setExitStatus(GOOD_EXIT_STATUS);
         } else {
-        	Reporter.log("SKIPLISTENER: onSkipWriteItem, exception is NOT an instance of: MyParentException<p>");
+        	logger.info("SKIPLISTENER: onSkipWriteItem, exception is NOT an instance of: MyParentException<p>");
             jobCtx.setExitStatus(BAD_EXIT_STATUS);
         }
     }

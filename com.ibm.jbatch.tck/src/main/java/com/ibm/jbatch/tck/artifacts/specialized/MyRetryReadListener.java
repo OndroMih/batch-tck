@@ -24,8 +24,6 @@ import javax.batch.api.chunk.listener.RetryReadListener;
 import javax.batch.runtime.context.JobContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
-
 @javax.inject.Named("myRetryReadListener")
 public class MyRetryReadListener implements RetryReadListener {
 	 private final static String sourceClass = MyRetryReadListener.class.getName();
@@ -36,7 +34,7 @@ public class MyRetryReadListener implements RetryReadListener {
 
 	    @Override
 	    public void onRetryReadException(Exception e) {
-	    	Reporter.log("In onRetryReadException()" + e);
+	    	logger.info("In onRetryReadException()" + e);
 	    	jobCtx.setExitStatus("Retry listener invoked");
 	    }
 }

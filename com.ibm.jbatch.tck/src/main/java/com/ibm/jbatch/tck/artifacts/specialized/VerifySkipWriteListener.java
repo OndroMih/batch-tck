@@ -27,7 +27,7 @@ import javax.batch.runtime.context.JobContext;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
+
 
 import com.ibm.jbatch.tck.artifacts.chunktypes.ReadRecord;
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
@@ -60,7 +60,7 @@ public class VerifySkipWriteListener implements SkipWriteListener {
 
     @Override
     public void onSkipWriteItem(List items, Exception e) throws Exception {
-        Reporter.log("In onSkipWriteItem()" + e + "<p>");
+        logger.info("In onSkipWriteItem()" + e + "<p>");
         ReadRecord input  = null;
         boolean inputOK   = true;
         int numberOfNonNullItemsFound = 0; //count the number of non-null items found in the list
@@ -90,10 +90,10 @@ public class VerifySkipWriteListener implements SkipWriteListener {
         }
         
         if (e instanceof MyParentException && inputOK) {
-        	Reporter.log("VERIFYSKIPLISTENER: onSkipWriteItem, exception is an instance of: MyParentException<p>");
+        	logger.info("VERIFYSKIPLISTENER: onSkipWriteItem, exception is an instance of: MyParentException<p>");
             jobCtx.setExitStatus(GOOD_EXIT_STATUS);
         } else {
-        	Reporter.log("VERIFYSKIPLISTENER: onSkipWriteItem, exception is NOT an instance of: MyParentException<p>");
+        	logger.info("VERIFYSKIPLISTENER: onSkipWriteItem, exception is NOT an instance of: MyParentException<p>");
             jobCtx.setExitStatus(BAD_EXIT_STATUS);
             throw new Exception(); //fail immediately, don't wait for assertion. next iteration of this class could overwrite status.
         }

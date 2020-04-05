@@ -28,15 +28,13 @@ import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
 
-import org.junit.Before;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.*;
 
 public class StepLevelPropertiesTests {
 
+	private static final Logger logger = Logger.getLogger(StepLevelPropertiesTests.class.getName());
 	private JobOperatorBridge jobOp = null;
 
 	private int PROPERTIES_COUNT = 3;
@@ -52,7 +50,7 @@ public class StepLevelPropertiesTests {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testStepLevelPropertiesCount() throws Exception {
 
 		String METHOD = "testStepLevelPropertiesCount";
@@ -63,13 +61,13 @@ public class StepLevelPropertiesTests {
 		
 		try {
 
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("step_level_properties_count");
 
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
 			assertWithMessage("Job completed", "VERY GOOD INVOCATION", jobExec.getExitStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
@@ -84,23 +82,23 @@ public class StepLevelPropertiesTests {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testStepLevelPropertiesPropertyValue() throws Exception {
 
 		String METHOD = "testStepLevelPropertiesPropertyValue";
 
 		try {
 
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("step_level_properties_value");
 
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 			assertWithMessage("Job completed",BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 
 			assertWithMessage("Property value", FOO_VALUE, jobExec.getExitStatus());
 
-			Reporter.log("Job batchlet return code is the step property foo value " + FOO_VALUE);
+			logger.info("Job batchlet return code is the step property foo value " + FOO_VALUE);
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
@@ -113,29 +111,29 @@ public class StepLevelPropertiesTests {
 	 * 
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testStepLevelPropertiesShouldNotBeAvailableThroughJobContext() throws Exception {
 
 		String METHOD = "testStepLevelPropertiesShouldNotBeAvailableThroughJobContext";
 
 		try {
 
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("step_level_properties_scope");
 
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 			assertWithMessage("Step Level Property is not available through job context",BatchStatus.COMPLETED.name(), jobExec.getExitStatus());
-			Reporter.log("Job batchlet return code is the step.property read through job context (expected value=COMPLETED) " + jobExec.getExitStatus());
+			logger.info("Job batchlet return code is the step.property read through job context (expected value=COMPLETED) " + jobExec.getExitStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -156,14 +154,13 @@ public class StepLevelPropertiesTests {
 
 	}
 
-	@BeforeTest
-	@Before
+	@BeforeEach
 	public void beforeTest() throws ClassNotFoundException {
 		jobOp = new JobOperatorBridge();
 
 	}
 
-	@AfterTest
+	@AfterEach
 	public void afterTest() {
 		jobOp = null;
 	}

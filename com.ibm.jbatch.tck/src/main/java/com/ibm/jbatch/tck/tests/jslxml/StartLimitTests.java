@@ -26,17 +26,14 @@ import java.util.Properties;
 import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.StepExecution;
 
-import org.junit.Before;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.*;
 
 public class StartLimitTests {
 
+	private static final Logger logger = Logger.getLogger(StartLimitTests.class.getName());
 	private JobOperatorBridge jobOp = null;
 
 
@@ -86,7 +83,7 @@ public class StartLimitTests {
 	 *                 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testStartLimitVariation1() throws Exception {
 
 		String METHOD = "testStartLimitVariation1";
@@ -109,16 +106,16 @@ public class StartLimitTests {
 				jobParameters.put("execution.number", execString);
 				jobParameters.put("batchlet.ref", "startLimitStateMachineVariation1Batchlet");
 				if (i == 1) {
-					Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+					logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 					exec = jobOp.startJobAndWaitForResult("startLimitTests", jobParameters);
 				} else {
-					Reporter.log("Invoke restartJobAndWaitForResult<p>");
+					logger.info("Invoke restartJobAndWaitForResult<p>");
 					exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParameters);
 				}
 				lastExecutionId = exec.getExecutionId();
 
-				Reporter.log("Execution #" + i + " JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
-				Reporter.log("Execution #" + i + " JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
+				logger.info("Execution #" + i + " JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
+				logger.info("Execution #" + i + " JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
 
 				// Typical TCK test execution # is 1-indexed but array is 0-indexed so use 'i-1' below.
 				assertWithMessage("Testing execution #" + i, expectedExitStatuses[i-1], exec.getExitStatus());
@@ -160,7 +157,7 @@ public class StartLimitTests {
 	 * @test_Strategy:
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testStartLimitVariation2() throws Exception {
 
 		String METHOD = "testStartLimitVariation2";
@@ -190,16 +187,16 @@ public class StartLimitTests {
 					jobParameters.put("stop.after.step.4","DON'T_MATCH_ME");
 				}
 				if (i == 1) {
-					Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+					logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 					exec = jobOp.startJobAndWaitForResult("startLimitTests", jobParameters);
 				} else {
-					Reporter.log("Invoke restartJobAndWaitForResult<p>");
+					logger.info("Invoke restartJobAndWaitForResult<p>");
 					exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParameters);
 				}
 				lastExecutionId = exec.getExecutionId();
 
-				Reporter.log("Execution #" + i + " JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
-				Reporter.log("Execution #" + i + " JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
+				logger.info("Execution #" + i + " JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
+				logger.info("Execution #" + i + " JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
 
 				// Typical TCK test execution # is 1-indexed but array is 0-indexed so use 'i-1' below.
 				assertWithMessage("Testing execution #" + i, expectedExitStatuses[i-1], exec.getExitStatus());
@@ -270,7 +267,7 @@ public class StartLimitTests {
 	 * @test_Strategy:
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testStartLimitVariation3() throws Exception {
 
 		String METHOD = "testStartLimitVariation3";
@@ -292,16 +289,16 @@ public class StartLimitTests {
 				jobParameters.put("execution.number", execString);
 				jobParameters.put("batchlet.ref", "startLimitStateMachineVariation3Batchlet");
 				if (i == 1) {
-					Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+					logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 					exec = jobOp.startJobAndWaitForResult("startLimitTests", jobParameters);
 				} else {
-					Reporter.log("Invoke restartJobAndWaitForResult<p>");
+					logger.info("Invoke restartJobAndWaitForResult<p>");
 					exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParameters);
 				}
 				lastExecutionId = exec.getExecutionId();
 
-				Reporter.log("Execution #" + i + " JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
-				Reporter.log("Execution #" + i + " JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
+				logger.info("Execution #" + i + " JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
+				logger.info("Execution #" + i + " JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
 
 				// Typical TCK test execution # is 1-indexed but array is 0-indexed so use 'i-1' below.
 				assertWithMessage("Testing execution #" + i, expectedExitStatuses[i-1], exec.getExitStatus());
@@ -340,8 +337,8 @@ public class StartLimitTests {
 
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -362,13 +359,12 @@ public class StartLimitTests {
 
 	}
 
-	@BeforeTest
-	@Before
+	@BeforeEach
 	public void beforeTest() throws ClassNotFoundException {
 		jobOp = new JobOperatorBridge(); 
 	}
 
-	@AfterTest
+	@AfterEach
 	public void afterTest() {
 		jobOp = null;
 	}

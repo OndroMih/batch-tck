@@ -29,31 +29,17 @@ import javax.batch.runtime.JobExecution;
 import javax.batch.runtime.Metric;
 import javax.batch.runtime.StepExecution;
 
-import org.junit.BeforeClass;
-import org.testng.Reporter;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import com.ibm.jbatch.tck.artifacts.specialized.MetricsStepListener;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.*;
 
 public class MetricsTests {
+	private static final Logger logger = Logger.getLogger(MetricsTests.class.getName());
+	private JobOperatorBridge jobOp = null;
 
-	private static JobOperatorBridge jobOp = null;
-
-	public static void setup(String[] args, Properties props) throws Exception {
-		String METHOD = "setup";
-
-		try {
-			jobOp = new JobOperatorBridge();
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
-	}
-
-	@BeforeMethod
-	@BeforeClass
-	public static void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		jobOp = new JobOperatorBridge();
 	}
 
@@ -79,20 +65,20 @@ public class MetricsTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testMetricsInApp() throws Exception {
 		String METHOD = "testMetricsInApp";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.fail=40<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.chunksize=7<p>");
-			Reporter.log("app.commitinterval=10<p>");
-			Reporter.log("numberOfSkips=0<p>");
-			Reporter.log("ReadProcessWrite=READ<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.fail=40<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.chunksize=7<p>");
+			logger.info("app.commitinterval=10<p>");
+			logger.info("numberOfSkips=0<p>");
+			logger.info("ReadProcessWrite=READ<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "40");
 			jobParams.put("app.arraysize", "30");
@@ -103,14 +89,14 @@ public class MetricsTests {
 			jobParams.put("app.writepoints", "0,7,14,21,28,30");
 			jobParams.put("app.next.writepoints", "7,14,21,28,30");
 
-			Reporter.log("Locate job XML file: testChunkMetrics.xml<p>");
+			logger.info("Locate job XML file: testChunkMetrics.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("testChunkMetrics",
 					jobParams);
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="
+			logger.info("execution #1 JobExecution getExitStatus()="
 					+ execution1.getExitStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
@@ -130,34 +116,34 @@ public class MetricsTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testMetricsSkipRead() throws Exception {
 
 		String METHOD = "testMetricsSkipRead";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.fail=1,3<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("numberOfSkips=2<p>");
-			Reporter.log("ReadProcessWrite=READ_SKIP<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.fail=1,3<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("numberOfSkips=2<p>");
+			logger.info("ReadProcessWrite=READ_SKIP<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "1,3,4,12");
 			jobParams.put("app.arraysize", "30");
 			jobParams.put("numberOfSkips", "4");
 			jobParams.put("ReadProcessWrite", "READ_SKIP");
 
-			Reporter.log("Locate job XML file: testMetricsSkipCount.xml<p>");
+			logger.info("Locate job XML file: testMetricsSkipCount.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("testMetricsSkipCount",
 					jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="
+			logger.info("execution #1 JobExecution getExitStatus()="
 					+ execution1.getExitStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
@@ -177,17 +163,17 @@ public class MetricsTests {
 				}
 			}
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
 
 			Metric[] metrics = step.getMetrics();
 
-			Reporter.log("Testing the read count for execution #1<p>");
+			logger.info("Testing the read count for execution #1<p>");
 			for (int i = 0; i < metrics.length; i++) {
 				if (metrics[i].getType().equals(Metric.MetricType.READ_SKIP_COUNT)) {
-					Reporter.log("AJM: in test, found metric: " + metrics[i].getType() + "<p>");
+					logger.info("AJM: in test, found metric: " + metrics[i].getType() + "<p>");
 					assertWithMessage(
 							"Testing the read skip count for execution #1", 4L,
 							metrics[i].getValue());
@@ -207,34 +193,34 @@ public class MetricsTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testMetricsSkipWrite() throws Exception {
 
 		String METHOD = "testMetricsSkipWrite";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.fail=1,3<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("numberOfSkips=2<p>");
-			Reporter.log("ReadProcessWrite=WRITE_SKIP<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.fail=1,3<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("numberOfSkips=2<p>");
+			logger.info("ReadProcessWrite=WRITE_SKIP<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("writerecord.fail", "1,3,4");
 			jobParams.put("app.arraysize", "30");
 			jobParams.put("numberOfSkips", "3");
 			jobParams.put("ReadProcessWrite", "WRITE_SKIP");
 
-			Reporter.log("Locate job XML file: testMetricsSkipWriteCount.xml<p>");
+			logger.info("Locate job XML file: testMetricsSkipWriteCount.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("testMetricsSkipWriteCount",
 					jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="
+			logger.info("execution #1 JobExecution getExitStatus()="
 					+ execution1.getExitStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
@@ -251,17 +237,17 @@ public class MetricsTests {
 				}
 			}
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
 
 			Metric[] metrics = step.getMetrics();
 
-			Reporter.log("Testing the write skip count for execution #1<p>");
+			logger.info("Testing the write skip count for execution #1<p>");
 			for (int i = 0; i < metrics.length; i++) {
 				if (metrics[i].getType().equals(Metric.MetricType.WRITE_SKIP_COUNT)) {
-					Reporter.log("AJM: in test, found metric: " + metrics[i].getType() + "<p>");
+					logger.info("AJM: in test, found metric: " + metrics[i].getType() + "<p>");
 					assertWithMessage(
 							"Testing the write skip count for execution #1", 3L,
 							metrics[i].getValue());
@@ -281,33 +267,33 @@ public class MetricsTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testMetricsSkipProcess() throws Exception {
 		String METHOD = "testMetricsSkipProcess";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.fail=7,13<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("numberOfSkips=2<p>");
-			Reporter.log("ReadProcessWrite=PROCESS<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.fail=7,13<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("numberOfSkips=2<p>");
+			logger.info("ReadProcessWrite=PROCESS<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("processrecord.fail", "7,13");
 			jobParams.put("app.arraysize", "30");
 			jobParams.put("numberOfSkips", "2");
 			jobParams.put("ReadProcessWrite", "PROCESS");
 
-			Reporter.log("Locate job XML file: testMetricsSkipCount.xml<p>");
+			logger.info("Locate job XML file: testMetricsSkipCount.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("testMetricsSkipCount",
 					jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="
+			logger.info("execution #1 JobExecution getExitStatus()="
 					+ execution1.getExitStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
@@ -327,17 +313,17 @@ public class MetricsTests {
 				}
 			}
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
 
 			Metric[] metrics = step.getMetrics();
 
-			Reporter.log("Testing the read count for execution #1<p>");
+			logger.info("Testing the read count for execution #1<p>");
 			for (int i = 0; i < metrics.length; i++) {
 				if (metrics[i].getType().equals(Metric.MetricType.PROCESS_SKIP_COUNT)) {
-					Reporter.log("AJM: in test, found metric: " + metrics[i].getType() + "<p>");
+					logger.info("AJM: in test, found metric: " + metrics[i].getType() + "<p>");
 					assertWithMessage(
 							"Testing the read count for execution #1", 2L,
 							metrics[i].getValue());
@@ -356,32 +342,32 @@ public class MetricsTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testReadMetric() throws Exception {
 		String METHOD = "testReadMetric";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.fail=40<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.chunksize=7<p>");
-			Reporter.log("app.commitinterval=10<p>");
-			Reporter.log("numberOfSkips=0<p>");
-			Reporter.log("ReadProcessWrite=READ<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.fail=40<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.chunksize=7<p>");
+			logger.info("app.commitinterval=10<p>");
+			logger.info("numberOfSkips=0<p>");
+			logger.info("ReadProcessWrite=READ<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "-1");
 			jobParams.put("app.arraysize", "30");
 
-			Reporter.log("Locate job XML file: testChunkMetrics.xml<p>");
+			logger.info("Locate job XML file: testChunkMetrics.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("testMetricCount",
 					jobParams);
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="
+			logger.info("execution #1 JobExecution getExitStatus()="
 					+ execution1.getExitStatus() + "<p>");
 
 			List<StepExecution> stepExecutions = jobOp
@@ -396,17 +382,17 @@ public class MetricsTests {
 				}
 			}
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
 
 			Metric[] metrics = step.getMetrics();
 
-			Reporter.log("Testing the read count for execution #1<p>");
+			logger.info("Testing the read count for execution #1<p>");
 			for (int i = 0; i < metrics.length; i++) {
 				if (metrics[i].getType().equals(Metric.MetricType.READ_COUNT)) {
-					Reporter.log("AJM: in test, found metric: " + metrics[i].getType() + "<p>");
+					logger.info("AJM: in test, found metric: " + metrics[i].getType() + "<p>");
 					assertWithMessage(
 							"Testing the read count for execution #1", 9L,
 							metrics[i].getValue());
@@ -427,22 +413,22 @@ public class MetricsTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testWriteMetric() throws Exception {
 		String METHOD = "testWriteMetric";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
 
-			Reporter.log("Locate job XML file: testChunkMetrics.xml<p>");
+			logger.info("Locate job XML file: testChunkMetrics.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("testMetricCount",
 					jobParams);
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="
+			logger.info("execution #1 JobExecution getExitStatus()="
 					+ execution1.getExitStatus() + "<p>");
 
 			List<StepExecution> stepExecutions = jobOp
@@ -457,17 +443,17 @@ public class MetricsTests {
 				}
 			}
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
 
 			Metric[] metrics = step.getMetrics();
 
-			Reporter.log("Testing the read count for execution #1<p>");
+			logger.info("Testing the read count for execution #1<p>");
 			for (int i = 0; i < metrics.length; i++) {
 				if (metrics[i].getType().equals(Metric.MetricType.WRITE_COUNT)) {
-					Reporter.log("AJM: in test, found metric: " + metrics[i].getType() + "<p>");
+					logger.info("AJM: in test, found metric: " + metrics[i].getType() + "<p>");
 					assertWithMessage(
 							"Testing the write count for execution #1", 9L,
 							metrics[i].getValue());
@@ -488,25 +474,25 @@ public class MetricsTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testMetricsFilterCount() throws Exception {
 
 		String METHOD = "testMetricsFilterCount";
 
 		try {
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
 			jobParams.put("app.processFilterItem", "3");
-			Reporter.log("app.processFilterItem=3<p>");
+			logger.info("app.processFilterItem=3<p>");
 
-			Reporter.log("Locate job XML file: testMetricsFilterCount.xml<p>");
+			logger.info("Locate job XML file: testMetricsFilterCount.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("testMetricsFilterCount",
 					jobParams);
 
-			Reporter.log("Obtaining StepExecutions for execution id: "
+			logger.info("Obtaining StepExecutions for execution id: "
 					+ execution1.getExecutionId() + "<p>");
 			List<StepExecution> stepExecutions = jobOp
 					.getStepExecutions(execution1.getExecutionId());
@@ -521,13 +507,13 @@ public class MetricsTests {
 				}
 			}
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
 			Metric[] metrics = step.getMetrics();
 
-			Reporter.log("Testing the filter count for execution #1<p>");
+			logger.info("Testing the filter count for execution #1<p>");
 			for (int i = 0; i < metrics.length; i++) {
 				if (metrics[i].getType().equals(Metric.MetricType.FILTER_COUNT)) {
 					assertWithMessage(
@@ -548,24 +534,24 @@ public class MetricsTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testMetricsCommitCount() throws Exception {
 
 		String METHOD = "testMetricsCommitCount";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
 			jobParams.put("app.processFilterItem", "3");
-			Reporter.log("app.processFilterItem=3<p>");
+			logger.info("app.processFilterItem=3<p>");
 
-			Reporter.log("Locate job XML file: testMetricsCommitCount.xml<p>");
+			logger.info("Locate job XML file: testMetricsCommitCount.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("testMetricsCommitCount",
 					jobParams);
 
-			Reporter.log("Obtaining StepExecutions for execution id: "
+			logger.info("Obtaining StepExecutions for execution id: "
 					+ execution1.getExecutionId() + "<p>");
 			List<StepExecution> stepExecutions = jobOp
 					.getStepExecutions(execution1.getExecutionId());
@@ -580,13 +566,13 @@ public class MetricsTests {
 				}
 			}
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
 			Metric[] metrics = step.getMetrics();
 
-			Reporter.log("Testing the commit count for execution #1<p>");
+			logger.info("Testing the commit count for execution #1<p>");
 			for (int i = 0; i < metrics.length; i++) {
 				if (metrics[i].getType().equals(Metric.MetricType.COMMIT_COUNT)) {
 					assertWithMessage(
@@ -610,26 +596,26 @@ public class MetricsTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testMetricsStepTimestamps() throws Exception {
 
 		String METHOD = "testMetricsStepTimestamps";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
 			jobParams.put("app.processFilterItem", "3");
-			Reporter.log("app.processFilterItem=3<p>");
+			logger.info("app.processFilterItem=3<p>");
 
-			Reporter.log("Locate job XML file: testMetricsCommitCount.xml<p>");
+			logger.info("Locate job XML file: testMetricsCommitCount.xml<p>");
 			long time = System.currentTimeMillis();
 			Date ts = new Date(time);
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("testMetricsCommitCount",
 					jobParams);
 
-			Reporter.log("Obtaining StepExecutions for execution id: "
+			logger.info("Obtaining StepExecutions for execution id: "
 					+ execution1.getExecutionId() + "<p>");
 			List<StepExecution> stepExecutions = jobOp
 					.getStepExecutions(execution1.getExecutionId());
@@ -644,14 +630,14 @@ public class MetricsTests {
 				}
 			}
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
 
-			Reporter.log("AJM: testcase start time: " + ts + "<p>");
-			Reporter.log("AJM: step start time: " + step.getStartTime() + "<p>");
-			Reporter.log("AJM: step end time: " + step.getEndTime() + "<p>");
+			logger.info("AJM: testcase start time: " + ts + "<p>");
+			logger.info("AJM: step start time: " + step.getStartTime() + "<p>");
+			logger.info("AJM: step end time: " + step.getEndTime() + "<p>");
 
 			assertWithMessage("Start time of test occurs approximately before start time of step", roughlyOrdered(ts, step.getStartTime()));
 			assertWithMessage("Start time of step occurs approximately before end time of step", roughlyOrdered(step.getStartTime(), step.getEndTime()));
@@ -671,38 +657,38 @@ public class MetricsTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testMetricsJobExecutionTimestamps() throws Exception {
 
 		String METHOD = "testMetricsJobExecutionTimestamps";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
 			jobParams.put("app.processFilterItem", "3");
-			Reporter.log("app.processFilterItem=3<p>");
+			logger.info("app.processFilterItem=3<p>");
 
-			Reporter.log("Locate job XML file: testMetricsCommitCount.xml<p>");
+			logger.info("Locate job XML file: testMetricsCommitCount.xml<p>");
 
 			long time = System.currentTimeMillis();
 			Date ts = new Date(time);
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("testMetricsCommitCount",
 					jobParams);
 
 
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="
+			logger.info("execution #1 JobExecution getBatchStatus()="
 					+ execution1.getBatchStatus() + "<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED,
 					execution1.getBatchStatus());
 
-			Reporter.log("AJM: testcase start time: " + ts + "<p>");
-			Reporter.log("AJM: job create time: " + execution1.getCreateTime() + "<p>");
-			Reporter.log("AJM: job start time: " + execution1.getStartTime() + "<p>");
-			Reporter.log("AJM: job last updated time: " + execution1.getLastUpdatedTime() + "<p>");
-			Reporter.log("AJM: job end time: " + execution1.getEndTime() + "<p>");
+			logger.info("AJM: testcase start time: " + ts + "<p>");
+			logger.info("AJM: job create time: " + execution1.getCreateTime() + "<p>");
+			logger.info("AJM: job start time: " + execution1.getStartTime() + "<p>");
+			logger.info("AJM: job last updated time: " + execution1.getLastUpdatedTime() + "<p>");
+			logger.info("AJM: job end time: " + execution1.getEndTime() + "<p>");
 
 			assertWithMessage("Start time of test occurs approximately before create time of job", roughlyOrdered(ts, execution1.getCreateTime()));
 			assertWithMessage("Create time of job occurs approximately before start time of job", roughlyOrdered(execution1.getCreateTime(), execution1.getStartTime()));
@@ -715,8 +701,8 @@ public class MetricsTests {
 
 	private static void handleException(String methodName, Exception e)
 			throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage() + "<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage() + "<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 	

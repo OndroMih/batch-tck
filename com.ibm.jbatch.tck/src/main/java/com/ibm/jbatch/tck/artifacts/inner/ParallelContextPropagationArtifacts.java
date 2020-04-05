@@ -27,7 +27,7 @@ import javax.batch.runtime.context.JobContext;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ParallelContextPropagationArtifacts {
 
@@ -87,14 +87,14 @@ public static String GOOD_EXIT_STATUS = "VERY GOOD INVOCATION";
 			 * <property name="topLevelJobProperty" value="topLevelJobProperty.value" />
 			 */
 			String propVal = jobCtx.getProperties().getProperty("topLevelJobProperty");
-			assertEquals("Job Property comparison", "topLevelJobProperty.value", propVal);
+			assertEquals("topLevelJobProperty.value", propVal, "Job Property comparison");
 			
 			propVal = stepCtx.getProperties().getProperty("topLevelStepProperty");
-			assertEquals("Step Property comparison", "topLevelStepProperty.value", propVal);
+			assertEquals("topLevelStepProperty.value", propVal, "Step Property comparison");
 			
-			assertEquals("Job name", "partitionCtxPropagation", jobCtx.getJobName());
+			assertEquals("partitionCtxPropagation", jobCtx.getJobName(), "Job name");
 
-			assertEquals("Step name", "step1", stepCtx.getStepName());
+			assertEquals("step1", stepCtx.getStepName(), "Step name");
 
 			return GOOD_EXIT_STATUS;
 		}
@@ -111,7 +111,7 @@ public static String GOOD_EXIT_STATUS = "VERY GOOD INVOCATION";
 		@Override
 		public String collectPartitionData() throws Exception {
 
-			assertEquals("step name", "step1", stepCtx.getStepName());
+			assertEquals("step1", stepCtx.getStepName(), "step name");
 
 			long jobid = jobCtx.getExecutionId();
 			long instanceid = jobCtx.getInstanceId();

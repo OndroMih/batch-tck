@@ -25,16 +25,13 @@ import java.util.Properties;
 import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
-import org.junit.Before;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.*;
 
 public class SplitFlowTransitionLoopTests {
 
+	private static final Logger logger = Logger.getLogger(SplitFlowTransitionLoopTests.class.getName());
 	private JobOperatorBridge jobOp = null;
 
 	/**
@@ -82,26 +79,26 @@ public class SplitFlowTransitionLoopTests {
 	 * @throws Exception
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testSplitFlowTransitionLoopSplitFlowSplit() throws Exception {
 
 		String METHOD = "testSplitFlowTransitionLoopSplitFlowSplit";
 
 		try {
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("split_flow_transition_loop_splitflowsplit", null);
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -122,13 +119,12 @@ public class SplitFlowTransitionLoopTests {
 		}
 	}
 
-	@BeforeTest
-	@Before
+	@BeforeEach
 	public void beforeTest() throws ClassNotFoundException {
 		jobOp = new JobOperatorBridge(); 
 	}
 
-	@AfterTest
+	@AfterEach
 	public void afterTest() {
 		jobOp = null;
 	}

@@ -31,32 +31,16 @@ import javax.batch.runtime.StepExecution;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 
-import org.junit.BeforeClass;
-import org.testng.Reporter;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.*;
 
 public class ContextAndListenerTests {
 
 	private final static Logger logger = Logger.getLogger(ContextAndListenerTests.class.getName());
-	private static JobOperatorBridge jobOp = null;
+	private JobOperatorBridge jobOp = null;
 
 
-	public static void setup(String[] args, Properties props) throws Exception {
-
-		String METHOD = "setup";
-
-		try {
-			jobOp = new JobOperatorBridge();
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
-	}
-
-	@BeforeMethod
-	@BeforeClass
-	public static void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		jobOp = new JobOperatorBridge();
 	}
 
@@ -66,29 +50,29 @@ public class ContextAndListenerTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test 
+ 
 	public void testExamineJobContextInArtifact() throws Exception {
 
 		String METHOD = "testExamineJobContextInArtifact()";
 
 		try {
 
-			Reporter.log("Locate job XML file: JobContextTestBatchlet.xml<p>");
+			logger.info("Locate job XML file: JobContextTestBatchlet.xml<p>");
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("app.timeinterval=10<p>");
+			logger.info("app.timeinterval=10<p>");
 			jobParams.put("app.timeinterval", "10");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("JobContextTestBatchlet", jobParams);
 		
 			
 			String testString = "JobName=job1;JobInstanceId=" + jobOp.getJobInstance(execution1.getExecutionId()).getInstanceId() + ";JobExecutionId=" + execution1.getExecutionId();
-			Reporter.log("EXPECTED JobExecution getBatchStatus()=COMPLETED<p>");
-			Reporter.log("ACTUAL JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("EXPECTED JobExecution getExitStatus()="+testString+"<p>");
-			Reporter.log("ACTUAL JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getBatchStatus()=COMPLETED<p>");
+			logger.info("ACTUAL JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getExitStatus()="+testString+"<p>");
+			logger.info("ACTUAL JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing batch status", BatchStatus.COMPLETED, execution1.getBatchStatus());
 			assertWithMessage("Testing exit status", testString, execution1.getExitStatus());
 		} catch (Exception e) {
@@ -102,21 +86,21 @@ public class ContextAndListenerTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test 
+ 
 	public void testExamineStepContextInArtifact() throws Exception {
 
 		String METHOD = "testExamineStepContextInArtifact()";
 
 		try {
 
-			Reporter.log("Locate job XML file: StepContextTestBatchlet.xml<p>");
+			logger.info("Locate job XML file: StepContextTestBatchlet.xml<p>");
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("app.timeinterval=10<p>");
+			logger.info("app.timeinterval=10<p>");
 			jobParams.put("app.timeinterval", "10");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("StepContextTestBatchlet", jobParams);
 		
 			List<StepExecution> steps = jobOp.getStepExecutions(execution1.getExecutionId());
@@ -124,10 +108,10 @@ public class ContextAndListenerTests {
 			assertWithMessage("list of step executions == 1", steps.size() == 1);
 			
 			String testString = "StepName=step1;StepExecutionId=" + steps.get(0).getStepExecutionId();
-			Reporter.log("EXPECTED JobExecution getBatchStatus()=COMPLETED<p>");
-			Reporter.log("ACTUAL JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("EXPECTED JobExecution getExitStatus()="+testString+"<p>");
-			Reporter.log("ACTUAL JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getBatchStatus()=COMPLETED<p>");
+			logger.info("ACTUAL JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getExitStatus()="+testString+"<p>");
+			logger.info("ACTUAL JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing batch status", BatchStatus.COMPLETED, execution1.getBatchStatus());
 			assertWithMessage("Testing exit status", testString, execution1.getExitStatus());
 			
@@ -142,7 +126,7 @@ public class ContextAndListenerTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test 
+ 
 	public void testOneArtifactIsJobAndStepListener() throws Exception {
 
 		String METHOD = "testOneArtifactIsJobAndStepListener";
@@ -153,20 +137,20 @@ public class ContextAndListenerTests {
 					"BeforeStep" + "UnusedExitStatusForPartitions" + "AfterStep" + 
 					"AfterJob";
 
-			Reporter.log("Locate job XML file: oneArtifactIsJobAndStepListener.xml<p>");
+			logger.info("Locate job XML file: oneArtifactIsJobAndStepListener.xml<p>");
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("app.timeinterval=10<p>");
+			logger.info("app.timeinterval=10<p>");
 			jobParams.put("app.timeinterval", "10");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("oneArtifactIsJobAndStepListener", jobParams);
 
-			Reporter.log("EXPECTED JobExecution getBatchStatus()=COMPLETED<p>");
-			Reporter.log("ACTUAL JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("EXPECTED JobExecution getExitStatus()="+expectedStr+"<p>");
-			Reporter.log("ACTUAL JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getBatchStatus()=COMPLETED<p>");
+			logger.info("ACTUAL JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getExitStatus()="+expectedStr+"<p>");
+			logger.info("ACTUAL JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing batch status", BatchStatus.COMPLETED, execution1.getBatchStatus());
 			assertWithMessage("Testing exit status", expectedStr, execution1.getExitStatus());
 		} catch (Exception e) {
@@ -180,7 +164,7 @@ public class ContextAndListenerTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test 
+ 
 	public void testgetException() throws Exception {
 
 		String METHOD = "testgetException";
@@ -188,19 +172,19 @@ public class ContextAndListenerTests {
 		try {
 			String expectedStr = "MyChunkListener: found instanceof MyParentException";
 
-			Reporter.log("Locate job XML file: job_chunk_getException.xml<p>");
+			logger.info("Locate job XML file: job_chunk_getException.xml<p>");
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("fail.immediate=true<p>");
+			logger.info("fail.immediate=true<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("job_chunk_getException", jobParams);
 
-			Reporter.log("EXPECTED JobExecution getBatchStatus()=FAILED<p>");
-			Reporter.log("ACTUAL JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("EXPECTED JobExecution getExitStatus()="+expectedStr+"<p>");
-			Reporter.log("ACTUAL JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getBatchStatus()=FAILED<p>");
+			logger.info("ACTUAL JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getExitStatus()="+expectedStr+"<p>");
+			logger.info("ACTUAL JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing batch status", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing exit status", expectedStr, execution1.getExitStatus());
 		} catch (Exception e) {
@@ -214,7 +198,7 @@ public class ContextAndListenerTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test 
+ 
 	public void testgetExceptionListenerBased() throws Exception {
 
 		String METHOD = "testgetExceptionListenerBased";
@@ -222,19 +206,19 @@ public class ContextAndListenerTests {
 		try {
 			String expectedStr = "MyChunkListener: found instanceof MyParentException";
 
-			Reporter.log("Locate job XML file: job_chunk_getExceptionListeners.xml<p>");
+			logger.info("Locate job XML file: job_chunk_getExceptionListeners.xml<p>");
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("fail.immediate=true<p>");
+			logger.info("fail.immediate=true<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("job_chunk_getExceptionListeners", jobParams);
 
-			Reporter.log("EXPECTED JobExecution getBatchStatus()=FAILED<p>");
-			Reporter.log("ACTUAL JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("EXPECTED JobExecution getExitStatus()="+expectedStr+"<p>");
-			Reporter.log("ACTUAL JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getBatchStatus()=FAILED<p>");
+			logger.info("ACTUAL JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getExitStatus()="+expectedStr+"<p>");
+			logger.info("ACTUAL JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing batch status", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing exit status", expectedStr, execution1.getExitStatus());
 		} catch (Exception e) {
@@ -250,19 +234,19 @@ public class ContextAndListenerTests {
      * @test_Strategy: FIXME
      */
     @Test
-    @org.junit.Test 
+ 
     public void testJobContextIsUniqueForMainThreadAndPartitions() throws Exception {
 
         String METHOD = "testJobContextIsUniqueForMainThreadAndPartitions";
         begin(METHOD);
 
         try {
-            Reporter.log("Locate job XML file: job_partitioned_1step.xml<p>");
+            logger.info("Locate job XML file: job_partitioned_1step.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult<p>");
+            logger.info("Invoke startJobAndWaitForResult<p>");
             JobExecution jobExecution = jobOp.startJobAndWaitForResult("job_partitioned_1step");
 
-            Reporter.log("JobExecution getBatchStatus()="+jobExecution.getBatchStatus()+"<p>");
+            logger.info("JobExecution getBatchStatus()="+jobExecution.getBatchStatus()+"<p>");
             assertObjEquals(BatchStatus.COMPLETED, jobExecution.getBatchStatus());
             assertObjEquals("COMPLETED", jobExecution.getExitStatus());
             
@@ -279,19 +263,19 @@ public class ContextAndListenerTests {
      * @test_Strategy: FIXME
      */
     @Test
-    @org.junit.Test 
+ 
     public void testJobContextIsUniqueForMainThreadAndFlowsInSplits() throws Exception {
 
         String METHOD = "testJobContextIsUniqueForMainThreadAndFlowsInSplits";
         begin(METHOD);
 
         try {
-            Reporter.log("Locate job XML file: job_split_batchlet_4steps.xml<p>");
+            logger.info("Locate job XML file: job_split_batchlet_4steps.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult<p>");
+            logger.info("Invoke startJobAndWaitForResult<p>");
             JobExecution execution = jobOp.startJobAndWaitForResult("job_split_batchlet_4steps");
 
-            Reporter.log("JobExecution getBatchStatus()="+execution.getBatchStatus()+"<p>");
+            logger.info("JobExecution getBatchStatus()="+execution.getBatchStatus()+"<p>");
             assertObjEquals(BatchStatus.COMPLETED, execution.getBatchStatus());
             assertObjEquals("COMPLETED", execution.getExitStatus());
             
@@ -308,18 +292,18 @@ public class ContextAndListenerTests {
      * @test_Strategy: FIXME
      */
     @Test
-    @org.junit.Test
+
     public void testStepContextIsUniqueForMainThreadAndPartitions() throws Exception {
         String METHOD = "testStepContextIsUniqueForMainThreadAndPartitions";
         begin(METHOD);
 
         try {
-            Reporter.log("Locate job XML file: job_partitioned_1step.xml<p>");
+            logger.info("Locate job XML file: job_partitioned_1step.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult<p>");
+            logger.info("Invoke startJobAndWaitForResult<p>");
             JobExecution jobExecution = jobOp.startJobAndWaitForResult("job_partitioned_1step");
 
-            Reporter.log("JobExecution getBatchStatus()=" + jobExecution.getBatchStatus() + "<p>");
+            logger.info("JobExecution getBatchStatus()=" + jobExecution.getBatchStatus() + "<p>");
             
             assertObjEquals(BatchStatus.COMPLETED, jobExecution.getBatchStatus());
             
@@ -336,17 +320,17 @@ public class ContextAndListenerTests {
         }
     }
 
-    @AfterClass
+    @AfterAll
     public static void cleanup() throws Exception {
     }
 
     private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
     private void begin(String str) {
-        Reporter.log("Begin test method: " + str + "<p>");
+        logger.info("Begin test method: " + str + "<p>");
     }
 }

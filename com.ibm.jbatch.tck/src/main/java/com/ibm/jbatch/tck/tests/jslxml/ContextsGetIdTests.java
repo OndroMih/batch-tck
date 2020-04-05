@@ -25,16 +25,13 @@ import java.util.Properties;
 import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
-import org.junit.Before;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.*;
 
 public class ContextsGetIdTests {
 
+	private static final Logger logger = Logger.getLogger(ContextsGetIdTests.class.getName());
 	private JobOperatorBridge jobOp = null;
 
 	/**
@@ -54,7 +51,7 @@ public class ContextsGetIdTests {
 	 * @throws Exception
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobContextGetId() throws Exception {
 
 		String METHOD = "testJobContextGetId";
@@ -63,13 +60,13 @@ public class ContextsGetIdTests {
 
 			String jobId = "job1";
 
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("contexts_getid_jobcontext", null);
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 
 			assertWithMessage("job id equals job1", jobId, jobExec.getExitStatus());
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
@@ -92,7 +89,7 @@ public class ContextsGetIdTests {
 	 * @throws Exception
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testStepContextGetId() throws Exception {
 
 		String METHOD = "testStepContextGetId";
@@ -100,22 +97,22 @@ public class ContextsGetIdTests {
 		try {
 			String stepId = "step1";
 
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("contexts_getid_stepcontext", null);
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 
 			assertWithMessage("job id equals job1", stepId, jobExec.getExitStatus());
 
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -136,13 +133,12 @@ public class ContextsGetIdTests {
 
 	}
 
-	@BeforeTest
-	@Before
+	@BeforeEach
 	public void beforeTest() throws ClassNotFoundException {
 		jobOp = new JobOperatorBridge(); 
 	}
 
-	@AfterTest
+	@AfterEach
 	public void afterTest() {
 		jobOp = null;
 	}

@@ -31,14 +31,9 @@ import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 import javax.batch.runtime.StepExecution;
 
-import org.junit.BeforeClass;
-import org.testng.Reporter;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
+import org.junit.jupiter.api.*;
 
 
 public class ParallelExecutionTests {
@@ -47,31 +42,20 @@ public class ParallelExecutionTests {
 
 	private static final String TIME_TO_SLEEP_BEFORE_ISSUING_STOP = "1900"; 
 
-	private static JobOperatorBridge jobOp = null;
+	private JobOperatorBridge jobOp = null;
 
-	public static void setup(String[] args, Properties props) throws Exception {
-		String METHOD = "setup";
-
-		try {
-			jobOp = new JobOperatorBridge();
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
-	}
-
-	@BeforeMethod
-	@BeforeClass
-	public static void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		jobOp = new JobOperatorBridge();
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void cleanup() throws Exception {
 	}
 
 
 	private void begin(String str) {
-		Reporter.log("Begin test method: " + str + "<p>");
+		logger.info("Begin test method: " + str + "<p>");
 	}
 
 	/*
@@ -80,18 +64,18 @@ public class ParallelExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testInvokeJobWithOnePartitionedStep() throws Exception {
 		String METHOD = "testInvokeJobWithOnePartitionedStep";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_partitioned_1step.xml<p>");
+			logger.info("Locate job XML file: job_partitioned_1step.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExecution = jobOp.startJobAndWaitForResult("job_partitioned_1step");
 
-			Reporter.log("JobExecution getBatchStatus()="+jobExecution.getBatchStatus()+"<p>");
+			logger.info("JobExecution getBatchStatus()="+jobExecution.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExecution.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -104,7 +88,7 @@ public class ParallelExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testInvokeJobWithOnePartitionedStepExitStatus() throws Exception {
 		String METHOD = "testInvokeJobWithOnePartitionedStepExitStatus";
 		begin(METHOD);
@@ -117,10 +101,10 @@ public class ParallelExecutionTests {
 			String sleepTime = System.getProperty("ParallelExecutionTests.testInvokeJobWithOnePartitionedStepExitStatus.sleep",DEFAULT_SLEEP_TIME);
 			jobParameters.put("sleep.time", sleepTime);
 			
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExecution = jobOp.startJobAndWaitForResult("job_partitioned_1step_exitStatusTest",jobParameters);
 
-			Reporter.log("JobExecution getBatchStatus()="+jobExecution.getBatchStatus()+"<p>");
+			logger.info("JobExecution getBatchStatus()="+jobExecution.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExecution.getBatchStatus());
 
 			List<StepExecution> stepExecutions = jobOp.getStepExecutions(jobExecution.getExecutionId());
@@ -150,33 +134,33 @@ public class ParallelExecutionTests {
 	 * instead of running forever.
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testStopRunningPartitionedStep() throws Exception {
 		String METHOD = "testStopRunningPartitionedStep";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_longrunning_partitioned.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_longrunning_partitioned.xml<p>");
 
-			Reporter.log("Create job parameters<p>");
+			logger.info("Create job parameters<p>");
 			Properties overrideJobParams = new Properties();
-			Reporter.log("run.indefinitely=true<p>");
+			logger.info("run.indefinitely=true<p>");
 			overrideJobParams.setProperty("run.indefinitely" , "true");
 
-			Reporter.log("Invoke startJobWithoutWaitingForResult<p>");
+			logger.info("Invoke startJobWithoutWaitingForResult<p>");
 			JobExecution jobExecution =  jobOp.startJobWithoutWaitingForResult("job_batchlet_longrunning_partitioned", overrideJobParams);
 
 			//Sleep long enough for parallel steps to fan out
 			int sleepTime = Integer.parseInt(System.getProperty("ParallelExecutionTests.testStopRunningPartitionedStep.sleep",TIME_TO_SLEEP_BEFORE_ISSUING_STOP));
-			Reporter.log("Sleep for " + TIME_TO_SLEEP_BEFORE_ISSUING_STOP);
+			logger.info("Sleep for " + TIME_TO_SLEEP_BEFORE_ISSUING_STOP);
 			Thread.sleep(sleepTime);
 
 
-			Reporter.log("Invoke stopJobAndWaitForResult<p>");
+			logger.info("Invoke stopJobAndWaitForResult<p>");
 			jobOp.stopJobAndWaitForResult(jobExecution);
 
 			JobExecution jobExec2 = jobOp.getJobExecution(jobExecution.getExecutionId());
-			Reporter.log("JobExecution getBatchStatus()=" + jobExec2.getBatchStatus() + "<p>");
+			logger.info("JobExecution getBatchStatus()=" + jobExec2.getBatchStatus() + "<p>");
 			assertObjEquals(BatchStatus.STOPPED, jobExec2.getBatchStatus());
 
 		} catch (Exception e) {
@@ -195,43 +179,43 @@ public class ParallelExecutionTests {
 	 * restart and run to completion.
 	 */
 	@Test
-	@org.junit.Test()
+()
 	public void testStopRestartRunningPartitionedStep() throws Exception {
 		String METHOD = "testStopRestartRunningPartitionedStep";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_longrunning_partitioned.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_longrunning_partitioned.xml<p>");
 
-			Reporter.log("Create job parameters<p>");
+			logger.info("Create job parameters<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("run.indefinitely=true<p>");
+			logger.info("run.indefinitely=true<p>");
 			jobParams.setProperty("run.indefinitely", "true");
 
-			Reporter.log("Invoke startJobWithoutWaitingForResult<p>");
+			logger.info("Invoke startJobWithoutWaitingForResult<p>");
 			JobExecution origJobExecution = jobOp.startJobWithoutWaitingForResult("job_batchlet_longrunning_partitioned", jobParams);
 
 			// Sleep long enough for parallel steps to fan out
 			int sleepTime = Integer.parseInt(System.getProperty("ParallelExecutionTests.testStopRestartRunningPartitionedStep.sleep",TIME_TO_SLEEP_BEFORE_ISSUING_STOP));
-			Reporter.log("Sleep for " + TIME_TO_SLEEP_BEFORE_ISSUING_STOP);
+			logger.info("Sleep for " + TIME_TO_SLEEP_BEFORE_ISSUING_STOP);
 			Thread.sleep(sleepTime);
 
-			Reporter.log("Invoke stopJobAndWaitForResult<p>");
+			logger.info("Invoke stopJobAndWaitForResult<p>");
 			jobOp.stopJobAndWaitForResult(origJobExecution);
 
 			JobExecution jobExec2 = jobOp.getJobExecution(origJobExecution.getExecutionId());
-			Reporter.log("JobExecution getBatchStatus()=" + jobExec2.getBatchStatus() + "<p>");
+			logger.info("JobExecution getBatchStatus()=" + jobExec2.getBatchStatus() + "<p>");
 			assertObjEquals(BatchStatus.STOPPED, jobExec2.getBatchStatus());
 
-			Reporter.log("Create restart job parameters<p>");
+			logger.info("Create restart job parameters<p>");
 			Properties restartJobParams = new Properties();
-			Reporter.log("run.indefinitely=true<p>");
+			logger.info("run.indefinitely=true<p>");
 			restartJobParams.setProperty("run.indefinitely", "false");
 
-			Reporter.log("Invoke restartJobAndWaitForResult<p>");
+			logger.info("Invoke restartJobAndWaitForResult<p>");
 			JobExecution restartedJobExec = jobOp.restartJobAndWaitForResult(origJobExecution.getExecutionId(), restartJobParams);
 
-			Reporter.log("JobExecution getBatchStatus()=" + restartedJobExec.getBatchStatus() + "<p>");
+			logger.info("JobExecution getBatchStatus()=" + restartedJobExec.getBatchStatus() + "<p>");
 			assertObjEquals(BatchStatus.COMPLETED, restartedJobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -244,18 +228,18 @@ public class ParallelExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testInvokeJobSimpleSplit() throws Exception {
 		String METHOD = "testInvokeJobSimpleSplit";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_split_batchlet_4steps.xml<p>");
+			logger.info("Locate job XML file: job_split_batchlet_4steps.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution execution = jobOp.startJobAndWaitForResult("job_split_batchlet_4steps");
 
-			Reporter.log("JobExecution getBatchStatus()="+execution.getBatchStatus()+"<p>");
+			logger.info("JobExecution getBatchStatus()="+execution.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, execution.getBatchStatus());
 			assertObjEquals("COMPLETED", execution.getExitStatus());
 		} catch (Exception e) {
@@ -277,27 +261,27 @@ public class ParallelExecutionTests {
 	 * many times the step has been run. If the data is not persisted
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testPartitionedPlanCollectorAnalyzerReducerComplete() throws Exception {
 		String METHOD = "testPartitionedPlanCollectorAnalyzerReducerComplete";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_partitioned_artifacts.xml<p>");
+			logger.info("Locate job XML file: job_partitioned_artifacts.xml<p>");
 
-			Reporter.log("Create Job parameters for Execution #1<p>");
+			logger.info("Create Job parameters for Execution #1<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("numPartitionsProp=3<p>");
+			logger.info("numPartitionsProp=3<p>");
 			//append "CA" to expected exit status for each partition
 			jobParams.setProperty("numPartitionsProp" , "3"); 
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution execution = jobOp.startJobAndWaitForResult("job_partitioned_artifacts", jobParams);
 
-			Reporter.log("Execution exit status = " +  execution.getExitStatus()+"<p>");
+			logger.info("Execution exit status = " +  execution.getExitStatus()+"<p>");
 			assertObjEquals("nullBeginCACACABeforeAfter", execution.getExitStatus());
 
-			Reporter.log("Execution status = " + execution.getBatchStatus()+"<p>");
+			logger.info("Execution status = " + execution.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED,execution.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -318,29 +302,29 @@ public class ParallelExecutionTests {
 	 * through the collector, analyzer, and finally the reducer.
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testZeroBasedPartitionedPlanCollectorAnalyzerReducerRollback() throws Exception {
 		String METHOD = "testZeroBasedPartitionedPlanCollectorAnalyzerReducerRollback";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_partitioned_artifacts.xml<p>");
+			logger.info("Locate job XML file: job_partitioned_artifacts.xml<p>");
 
-			Reporter.log("Create Job parameters for Execution #1<p>");
+			logger.info("Create Job parameters for Execution #1<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("numPartitionsProp=3<p>");
-			Reporter.log("failThisPartition=0<p>");
+			logger.info("numPartitionsProp=3<p>");
+			logger.info("failThisPartition=0<p>");
 			//append "CA" to expected exit status for each partition
 			jobParams.setProperty("numPartitionsProp" , "3"); 
 			jobParams.setProperty("failThisPartition" , "0"); //Remember we are 0 based
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution execution = jobOp.startJobAndWaitForResult("job_partitioned_artifacts", jobParams);
 
-			Reporter.log("Execution exit status = " +  execution.getExitStatus()+"<p>");
+			logger.info("Execution exit status = " +  execution.getExitStatus()+"<p>");
 			assertObjEquals("nullBeginCACACARollbackAfter", execution.getExitStatus());
 
-			Reporter.log("Execution status = " + execution.getBatchStatus()+"<p>");
+			logger.info("Execution status = " + execution.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.FAILED,execution.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -367,30 +351,30 @@ public class ParallelExecutionTests {
 	 * since it does not append any data to the exit status.
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testPartitionedCollectorAnalyzerReducerChunkRestartItemCount10() throws Exception {
 
 		String METHOD = "testPartitionedCollectorAnalyzerReducerChunkRestartItemCount10";
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("readrecord.fail=23<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-			Reporter.log("app.next.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("readrecord.fail=23<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("app.next.writepoints=0,5,10,15,20,25,30<p>");
 			jobParams.put("readrecord.fail", "23");
 			jobParams.put("app.arraysize", "30");
 			jobParams.put("app.writepoints", "0,10,20,30");
 			jobParams.put("app.next.writepoints", "20,30");
 
-			Reporter.log("Locate job XML file: chunkrestartPartitionedCheckpt10.xml<p>");
+			logger.info("Locate job XML file: chunkrestartPartitionedCheckpt10.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunkrestartPartitionedCheckpt10", jobParams);
 
 			{ // Use block to reduce copy/paste errors
-				Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-				Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+				logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+				logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
 				assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 
 				// '2' each from partition that gets through the first two chunks and fails during the third
@@ -411,13 +395,13 @@ public class ParallelExecutionTests {
 			{
 				long execution1Id = execution1.getExecutionId();
 				long execution1InstanceId = execution1.getInstanceId();
-				Reporter.log("Invoke restartJobAndWaitForResult with execution id: " + execution1Id + "<p>");
+				logger.info("Invoke restartJobAndWaitForResult with execution id: " + execution1Id + "<p>");
 				TCKJobExecutionWrapper execution2 = jobOp.restartJobAndWaitForResult(execution1Id, jobParams);
 
-				Reporter.log("execution #2 JobExecution getBatchStatus()=" + execution2.getBatchStatus() + "<p>");
-				Reporter.log("execution #2 JobExecution getExitStatus()=" + execution2.getExitStatus() + "<p>");
-				Reporter.log("execution #2 Job instance id=" + execution2.getInstanceId() + "<p>");
-				Reporter.log("execution #2 Job execution id=" + execution2.getExecutionId() + "<p>");
+				logger.info("execution #2 JobExecution getBatchStatus()=" + execution2.getBatchStatus() + "<p>");
+				logger.info("execution #2 JobExecution getExitStatus()=" + execution2.getExitStatus() + "<p>");
+				logger.info("execution #2 Job instance id=" + execution2.getInstanceId() + "<p>");
+				logger.info("execution #2 Job execution id=" + execution2.getExecutionId() + "<p>");
 				
 				// '2' for each of the two partitions that process chunks #2, #3, and each make one C+A call 
 				// at the end of the partition and '0' for the partition already complete.
@@ -454,39 +438,39 @@ public class ParallelExecutionTests {
      * the failed partition.
      */
     @Test
-    @org.junit.Test
+
     public void testPartitionedMapperOverrideFalseOnRestart() throws Exception {
         String METHOD = "testPartitionedMapperOverrideFalse";
         begin(METHOD);
 
         try {
-            Reporter.log("Locate job XML file: job_partitioned_artifacts.xml<p>");
+            logger.info("Locate job XML file: job_partitioned_artifacts.xml<p>");
 
-            Reporter.log("Create Job parameters for Execution #1<p>");
+            logger.info("Create Job parameters for Execution #1<p>");
             Properties jobParams = new Properties();
-            Reporter.log("numPartitionsProp=3<p>");
-            Reporter.log("failThisPartition=0<p>");
+            logger.info("numPartitionsProp=3<p>");
+            logger.info("failThisPartition=0<p>");
             //append "CA" to expected exit status for each partition
             jobParams.setProperty("numPartitionsProp" , "3"); 
             jobParams.setProperty("failThisPartition" , "0"); //Remember we are 0 based
             jobParams.setProperty("partitionsOverride", "false");
 
-            Reporter.log("Invoke startJobAndWaitForResult<p>");
+            logger.info("Invoke startJobAndWaitForResult<p>");
             JobExecution execution = jobOp.startJobAndWaitForResult("job_partitioned_artifacts", jobParams);
 
-            Reporter.log("Execution exit status = " +  execution.getExitStatus()+"<p>");
+            logger.info("Execution exit status = " +  execution.getExitStatus()+"<p>");
             assertObjEquals("nullBeginCACACARollbackAfter", execution.getExitStatus());
 
-            Reporter.log("Execution status = " + execution.getBatchStatus()+"<p>");
+            logger.info("Execution status = " + execution.getBatchStatus()+"<p>");
             assertObjEquals(BatchStatus.FAILED,execution.getBatchStatus());
             
-            Reporter.log("Set restart job parameters<p>");
+            logger.info("Set restart job parameters<p>");
             jobParams.setProperty("numPartitionsProp" , "7"); 
             jobParams.setProperty("failThisPartition" , "5"); //Remember we are 0 based
             jobParams.setProperty("partitionsOverride", "false");
             
             JobExecution execution2 = jobOp.restartJobAndWaitForResult(execution.getExecutionId(), jobParams);
-            Reporter.log("Execution exit status = " +  execution2.getExitStatus()+"<p>");
+            logger.info("Execution exit status = " +  execution2.getExitStatus()+"<p>");
             assertObjEquals("nullBeginCABeforeAfter", execution2.getExitStatus());
             
         } catch (Exception e) {
@@ -507,39 +491,39 @@ public class ParallelExecutionTests {
      * used.
      */
     @Test
-    @org.junit.Test
+
     public void testPartitionedMapperOverrideTrueDiffPartitionNumOnRestart() throws Exception {
         String METHOD = "testPartitionedMapperOverrideTrueDiffPartitionNumOnRestart";
         begin(METHOD);
 
         try {
-            Reporter.log("Locate job XML file: job_partitioned_artifacts.xml<p>");
+            logger.info("Locate job XML file: job_partitioned_artifacts.xml<p>");
 
-            Reporter.log("Create Job parameters for Execution #1<p>");
+            logger.info("Create Job parameters for Execution #1<p>");
             Properties jobParams = new Properties();
-            Reporter.log("numPartitionsProp=2<p>");
-            Reporter.log("failThisPartition=0<p>");
+            logger.info("numPartitionsProp=2<p>");
+            logger.info("failThisPartition=0<p>");
             //append "CA" to expected exit status for each partition
             jobParams.setProperty("numPartitionsProp" , "2"); 
             jobParams.setProperty("failThisPartition" , "0"); //Remember we are 0 based
             jobParams.setProperty("partitionsOverride", "false");
 
-            Reporter.log("Invoke startJobAndWaitForResult<p>");
+            logger.info("Invoke startJobAndWaitForResult<p>");
             JobExecution execution = jobOp.startJobAndWaitForResult("job_partitioned_artifacts", jobParams);
 
-            Reporter.log("Execution exit status = " +  execution.getExitStatus()+"<p>");
+            logger.info("Execution exit status = " +  execution.getExitStatus()+"<p>");
             assertObjEquals("nullBeginCACARollbackAfter", execution.getExitStatus());
 
-            Reporter.log("Execution status = " + execution.getBatchStatus()+"<p>");
+            logger.info("Execution status = " + execution.getBatchStatus()+"<p>");
             assertObjEquals(BatchStatus.FAILED,execution.getBatchStatus());
             
-            Reporter.log("Set restart job parameters<p>");
+            logger.info("Set restart job parameters<p>");
             jobParams.setProperty("numPartitionsProp" , "4"); 
             jobParams.setProperty("failThisPartition" , "3"); //Remember we are 0 based
             jobParams.setProperty("partitionsOverride", "true");
             
             JobExecution execution2 = jobOp.restartJobAndWaitForResult(execution.getExecutionId(), jobParams);
-            Reporter.log("Execution exit status = " +  execution2.getExitStatus()+"<p>");
+            logger.info("Execution exit status = " +  execution2.getExitStatus()+"<p>");
             assertObjEquals("nullBeginCACACACARollbackAfter", execution2.getExitStatus());
             
         } catch (Exception e) {
@@ -560,39 +544,39 @@ public class ParallelExecutionTests {
      * partitions should be restarted anyway, even though some had completed previously.
      */
     @Test
-    @org.junit.Test
+
     public void testPartitionedMapperOverrideTrueSamePartitionNumOnRestart() throws Exception {
         String METHOD = "testPartitionedMapperOverrideTrueSamePartitionNumOnRestart";
         begin(METHOD);
 
         try {
-            Reporter.log("Locate job XML file: job_partitioned_artifacts.xml<p>");
+            logger.info("Locate job XML file: job_partitioned_artifacts.xml<p>");
 
-            Reporter.log("Create Job parameters for Execution #1<p>");
+            logger.info("Create Job parameters for Execution #1<p>");
             Properties jobParams = new Properties();
-            Reporter.log("numPartitionsProp=3<p>");
-            Reporter.log("failThisPartition=0<p>");
+            logger.info("numPartitionsProp=3<p>");
+            logger.info("failThisPartition=0<p>");
             //append "CA" to expected exit status for each partition
             jobParams.setProperty("numPartitionsProp" , "3"); 
             jobParams.setProperty("failThisPartition" , "0"); //Remember we are 0 based
             jobParams.setProperty("partitionsOverride", "false");
 
-            Reporter.log("Invoke startJobAndWaitForResult<p>");
+            logger.info("Invoke startJobAndWaitForResult<p>");
             JobExecution execution = jobOp.startJobAndWaitForResult("job_partitioned_artifacts", jobParams);
 
-            Reporter.log("Execution exit status = " +  execution.getExitStatus()+"<p>");
+            logger.info("Execution exit status = " +  execution.getExitStatus()+"<p>");
             assertObjEquals("nullBeginCACACARollbackAfter", execution.getExitStatus());
 
-            Reporter.log("Execution status = " + execution.getBatchStatus()+"<p>");
+            logger.info("Execution status = " + execution.getBatchStatus()+"<p>");
             assertObjEquals(BatchStatus.FAILED,execution.getBatchStatus());
             
-            Reporter.log("Set restart job parameters<p>");
+            logger.info("Set restart job parameters<p>");
             jobParams.setProperty("numPartitionsProp" , "3"); 
             jobParams.setProperty("failThisPartition" , "1"); //Remember we are 0 based
             jobParams.setProperty("partitionsOverride", "true");
             
             JobExecution execution2 = jobOp.restartJobAndWaitForResult(execution.getExecutionId(), jobParams);
-            Reporter.log("Execution exit status = " +  execution2.getExitStatus()+"<p>");
+            logger.info("Execution exit status = " +  execution2.getExitStatus()+"<p>");
             assertObjEquals("nullBeginCACACARollbackAfter", execution2.getExitStatus());
             
         } catch (Exception e) {
@@ -601,8 +585,8 @@ public class ParallelExecutionTests {
     }
     
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 }

@@ -25,21 +25,18 @@ import java.util.Properties;
 import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
-import org.junit.BeforeClass;
-import org.testng.Reporter;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
-
 import com.ibm.jbatch.tck.ann.*;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.*;
 
 
 public class ListenerOnErrorTests {
-	private static JobOperatorBridge jobOp = null;
+	private static final Logger logger = Logger.getLogger(ListenerOnErrorTests.class.getName());
+	private JobOperatorBridge jobOp = null;
 	
-	@BeforeMethod
-	@BeforeClass
-	public static void setup() throws Exception {
+	@BeforeEach
+	public void setup() throws Exception {
 		jobOp = new JobOperatorBridge();
 	}
 
@@ -68,21 +65,21 @@ public class ListenerOnErrorTests {
 				+ "based on the chunk size, input data, and failing record number. Also check that the job fails."
 	)
 	@Test
-	@org.junit.Test
+
 	public void testOnWriteErrorItems() throws Exception {
 		String GOOD_EXIT_STATUS = new String("[10, 12, 14, 16, 18]");
 		
-	    Reporter.log("Create job parameters for execution<p>");
+	    logger.info("Create job parameters for execution<p>");
         Properties jobParams = new Properties();
 		
-	    Reporter.log("write.fail=true<p>");
+	    logger.info("write.fail=true<p>");
 	    jobParams.put("write.fail", "true");
 
-	    Reporter.log("Invoke startJobAndWaitForResult for execution<p>");
+	    logger.info("Invoke startJobAndWaitForResult for execution<p>");
 	    JobExecution je = jobOp.startJobAndWaitForResult("listenerOnError", jobParams);
 	
-	    Reporter.log("JobExecution getBatchStatus()=" + je.getBatchStatus() + "<p>");
-	    Reporter.log("JobExecution getExitStatus()=" + je.getExitStatus() + "<p>");
+	    logger.info("JobExecution getBatchStatus()=" + je.getBatchStatus() + "<p>");
+	    logger.info("JobExecution getExitStatus()=" + je.getExitStatus() + "<p>");
 	    assertWithMessage("Testing execution for the WRITE LISTENER", BatchStatus.FAILED, je.getBatchStatus());
 	    assertWithMessage("Testing execution for the WRITE LISTENER", GOOD_EXIT_STATUS, je.getExitStatus());
 	}
@@ -112,20 +109,20 @@ public class ListenerOnErrorTests {
     			+ "based on the input data and the failing record number. Also check that the job fails."    	
     )
 	@Test
-	@org.junit.Test
+
 	public void testOnProcessErrorItems() throws Exception {
 		String GOOD_EXIT_STATUS = new String("8");
-        Reporter.log("Create job parameters for execution:<p>");
+        logger.info("Create job parameters for execution:<p>");
         Properties jobParams = new Properties();
 
-        Reporter.log("process.fail=true<p>");
+        logger.info("process.fail=true<p>");
         jobParams.put("process.fail", "true");
 
-        Reporter.log("Invoke startJobAndWaitForResult for execution<p>");
+        logger.info("Invoke startJobAndWaitForResult for execution<p>");
         JobExecution je = jobOp.startJobAndWaitForResult("listenerOnError", jobParams);
 
-        Reporter.log("JobExecution getBatchStatus()=" + je.getBatchStatus() + "<p>");
-        Reporter.log("JobExecution getExitStatus()=" + je.getExitStatus() + "<p>");
+        logger.info("JobExecution getBatchStatus()=" + je.getBatchStatus() + "<p>");
+        logger.info("JobExecution getExitStatus()=" + je.getExitStatus() + "<p>");
         assertWithMessage("Testing execution for the PROCESS LISTENER", BatchStatus.FAILED, je.getBatchStatus());
         assertWithMessage("Testing execution for the PROCESS LISTENER", GOOD_EXIT_STATUS, je.getExitStatus());
 	}

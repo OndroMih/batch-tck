@@ -39,7 +39,7 @@ import javax.batch.runtime.JobExecution;
 import javax.batch.runtime.JobInstance;
 import javax.batch.runtime.StepExecution;
 
-import org.testng.Reporter;
+
 
 import com.ibm.jbatch.tck.spi.JobExecutionWaiter;
 import com.ibm.jbatch.tck.spi.JobExecutionWaiterFactory;
@@ -88,7 +88,7 @@ public class JobOperatorBridge {
 			terminatedJobExecution = waiter.awaitTermination();
 		} catch (JobExecutionTimeoutException e) {
 			logger.severe(TIMEOUT_MSG);
-			Reporter.log(TIMEOUT_MSG);
+			logger.info(TIMEOUT_MSG);
 			throw e;
 		}									
 
@@ -134,7 +134,7 @@ public class JobOperatorBridge {
 			terminatedJobExecution = waiter.awaitTermination();
 		} catch (JobExecutionTimeoutException e) {
 			logger.severe(TIMEOUT_MSG);
-			Reporter.log(TIMEOUT_MSG);
+			logger.info(TIMEOUT_MSG);
 			throw e;
 		}									
 
@@ -152,7 +152,7 @@ public class JobOperatorBridge {
 			terminatedJobExecution = waiter.awaitTermination();
 		} catch (JobExecutionTimeoutException e) {
 			logger.severe(TIMEOUT_MSG);
-			Reporter.log(TIMEOUT_MSG);
+			logger.info(TIMEOUT_MSG);
 			throw e;
 		}									
 

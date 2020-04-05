@@ -33,8 +33,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.testng.Reporter;
-
 import com.ibm.jbatch.tck.artifacts.chunktypes.NumbersCheckpointData;
 import com.ibm.jbatch.tck.artifacts.chunktypes.NumbersRecord;
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
@@ -94,19 +92,19 @@ public class NumbersReader extends AbstractItemReader {
 			    forcedFailCount = 0;
 			    failindex = readerIndex;
 			    testState = STATE_RETRY;
-			    Reporter.log("Fail on purpose NumbersRecord.readItem<p>");
+			    logger.warning("Fail on purpose NumbersRecord.readItem<p>");
 				throw new MyParentException("Fail on purpose in NumbersRecord.readItem()");	
 		} 
 		
 		if (testState == STATE_RETRY)
 		{
 			if(stepCtx.getProperties().getProperty("retry.read.exception.invoked") != "true") {
-				Reporter.log("onRetryReadException not invoked<p>");
+				logger.warning("onRetryReadException not invoked<p>");
 				throw new Exception("onRetryReadException not invoked");
 			}
 			
 			if(stepCtx.getProperties().getProperty("retry.read.exception.match") != "true") {
-				Reporter.log("retryable exception does not match");
+				logger.warning("retryable exception does not match");
 				throw new Exception("retryable exception does not match");
 			}
 			

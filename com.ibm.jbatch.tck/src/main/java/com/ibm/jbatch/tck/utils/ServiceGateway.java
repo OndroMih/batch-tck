@@ -22,7 +22,7 @@ import java.util.ServiceLoader;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.testng.Reporter;
+
 
 import com.ibm.jbatch.tck.spi.JobExecutionWaiterFactory;
 
@@ -39,7 +39,7 @@ public class ServiceGateway {
                 if (logger.isLoggable(Level.FINE)) {
                     logger.fine("Loaded JobExecutionWaiterFactory with className = " + provider.getClass().getCanonicalName());
                 }
-                Reporter.log("Loaded JobExecutionWaiterFactory with className = " + provider.getClass().getCanonicalName() + "<p>");
+                logger.info("Loaded JobExecutionWaiterFactory with className = " + provider.getClass().getCanonicalName() + "<p>");
                 // Use first one
                 services = provider;
                 break;

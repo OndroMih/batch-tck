@@ -32,44 +32,26 @@ import javax.batch.runtime.StepExecution;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.testng.Reporter;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.*;
 
-// Since we don't want to run these in SE, and are only really running TestNG in EE, we
-// can safely do a JUnit @Ignore without missing anything.
-@Ignore
+@Tag("EE")
 public class TransactionTests {
 
 	private final static Logger logger = Logger.getLogger(TransactionTests.class.getName());
 
-	private static JobOperatorBridge jobOp;
+	private JobOperatorBridge jobOp;
 
-	public static void setup(String[] args, Properties props) throws Exception {
-		String METHOD = "setup";
-
-		try {
-			jobOp = new JobOperatorBridge();
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
-	}
-
-	@BeforeMethod
-	@BeforeClass
-	public static void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		jobOp = new JobOperatorBridge();
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void cleanup() throws Exception {
 	}
 
 	private void begin(String str) {
-		Reporter.log("Begin test method: " + str + "<p>");
+		logger.info("Begin test method: " + str + "<p>");
 	}
 
 
@@ -85,7 +67,7 @@ public class TransactionTests {
 	 *
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testTranRollbackRetryReadSkipRead() throws Exception {
 		String METHOD = "testTranRollbackRetryReadSkipRead";
 		begin(METHOD);
@@ -111,9 +93,9 @@ public class TransactionTests {
 			jobParams.put("rollback", rollback.toString());
 			jobParams.put("auto.commit", autoCommit.toString());
 
-			Reporter.log("Locate job XML file: job_chunk_retryskip_rollback.xml<p>");
+			logger.info("Locate job XML file: job_chunk_retryskip_rollback.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_chunk_retryskip_rollback",jobParams);
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
@@ -133,7 +115,7 @@ public class TransactionTests {
 	 *
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testTranRollbackRetryProcessSkipProcess() throws Exception {
 		String METHOD = "testTranRollbackRetryProcessSkipProcess";
 		begin(METHOD);
@@ -159,9 +141,9 @@ public class TransactionTests {
 			jobParams.put("rollback", rollback.toString());
 			jobParams.put("auto.commit", autoCommit.toString());
 
-			Reporter.log("Locate job XML file: job_chunk_retryskip_rollback.xml<p>");
+			logger.info("Locate job XML file: job_chunk_retryskip_rollback.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_chunk_retryskip_rollback",jobParams);
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
@@ -181,7 +163,7 @@ public class TransactionTests {
 	 *
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testTranRollbackRetryWriteSkipWrite() throws Exception {
 		String METHOD = "testTranRollbackRetryWriteSkipWrite";
 		begin(METHOD);
@@ -207,9 +189,9 @@ public class TransactionTests {
 			jobParams.put("rollback", rollback.toString());
 			jobParams.put("auto.commit", autoCommit.toString());
 
-			Reporter.log("Locate job XML file: job_chunk_retryskip_rollback.xml<p>");
+			logger.info("Locate job XML file: job_chunk_retryskip_rollback.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_chunk_retryskip_rollback",jobParams);
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
@@ -223,7 +205,7 @@ public class TransactionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testGlobalTranNoExceptions() throws Exception {
 		String METHOD = "testGlobalTranNoExceptions";
 		begin(METHOD);
@@ -242,13 +224,13 @@ public class TransactionTests {
 			Integer expectedCompletedOrders = this.calculateExpectedCompleteOrders(initInventory, forcedFailCount, itemCount);
 
 			Properties jobParams = new Properties();
-			Reporter.log("Create job parameters for execution #1:<p>");
-			Reporter.log("javax.transaction.global.timeout=300<p>");
-			Reporter.log("commit.interval="+itemCount.toString()+"<p>");
-			Reporter.log("init.inventory.quantity="+initInventory.toString()+"<p>");
-			Reporter.log("forced.fail.count="+forcedFailCount.toString()+"<p>");
-			Reporter.log("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
-			Reporter.log("expected.inventory="+expectedInventory.toString()+"<p>");
+			logger.info("Create job parameters for execution #1:<p>");
+			logger.info("javax.transaction.global.timeout=300<p>");
+			logger.info("commit.interval="+itemCount.toString()+"<p>");
+			logger.info("init.inventory.quantity="+initInventory.toString()+"<p>");
+			logger.info("forced.fail.count="+forcedFailCount.toString()+"<p>");
+			logger.info("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
+			logger.info("expected.inventory="+expectedInventory.toString()+"<p>");
 			jobParams.put("javax.transaction.global.timeout", "300");
 			jobParams.put("commit.interval", itemCount.toString());
 			jobParams.put("init.inventory.quantity", initInventory.toString());
@@ -257,11 +239,11 @@ public class TransactionTests {
 			jobParams.put("expected.inventory", expectedInventory.toString());
 
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_chunk_globaltran",jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
 			assertObjEquals("Inventory=" +expectedInventory + " InitialCheckpoint=" + null +" OrderCount="+ expectedCompletedOrders , jobExec.getExitStatus());
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
@@ -277,7 +259,7 @@ public class TransactionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testGlobalTranForcedExceptionWithRollback() throws Exception {
 		String METHOD = "testGlobalTranForcedExceptionWithRollback";
 		begin(METHOD);
@@ -296,13 +278,13 @@ public class TransactionTests {
 
 			Properties jobParams = new Properties();
 
-			Reporter.log("Create job parameters for execution #1:<p>");
-			Reporter.log("javax.transaction.global.timeout=300<p>");
-			Reporter.log("commit.interval="+itemCount.toString()+"<p>");
-			Reporter.log("init.inventory.quantity="+initInventory.toString()+"<p>");
-			Reporter.log("forced.fail.count="+forcedFailCount.toString()+"<p>");
-			Reporter.log("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
-			Reporter.log("expected.inventory="+expectedInventory.toString()+"<p>");
+			logger.info("Create job parameters for execution #1:<p>");
+			logger.info("javax.transaction.global.timeout=300<p>");
+			logger.info("commit.interval="+itemCount.toString()+"<p>");
+			logger.info("init.inventory.quantity="+initInventory.toString()+"<p>");
+			logger.info("forced.fail.count="+forcedFailCount.toString()+"<p>");
+			logger.info("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
+			logger.info("expected.inventory="+expectedInventory.toString()+"<p>");
 			jobParams.put("javax.transaction.global.timeout", "300");
 			jobParams.put("commit.interval", itemCount.toString());
 			jobParams.put("init.inventory.quantity", initInventory.toString());
@@ -310,11 +292,11 @@ public class TransactionTests {
 			jobParams.put("dummy.delay.seconds", dummyDelay.toString());
 			jobParams.put("expected.inventory", expectedInventory.toString());
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_chunk_globaltran",jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
 			assertObjEquals("Inventory=" +expectedInventory + " InitialCheckpoint=" + null +" OrderCount="+ expectedCompletedOrders , jobExec.getExitStatus());
 			assertObjEquals(BatchStatus.FAILED, jobExec.getBatchStatus());
 		} catch (Exception e) {
@@ -329,7 +311,7 @@ public class TransactionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testGlobalTranForcedExceptionCheckpointRestart() throws Exception {
 		String METHOD = "testGlobalTranForcedExceptionCheckpointRestart";
 		begin(METHOD);
@@ -348,13 +330,13 @@ public class TransactionTests {
 
 			Properties jobParams = new Properties();
 
-			Reporter.log("Create job parameters for execution #1:<p>");
-			Reporter.log("javax.transaction.global.timeout=300<p>");
-			Reporter.log("commit.interval="+itemCount.toString()+"<p>");
-			Reporter.log("init.inventory.quantity="+initInventory.toString()+"<p>");
-			Reporter.log("forced.fail.count="+forcedFailCount.toString()+"<p>");
-			Reporter.log("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
-			Reporter.log("expected.inventory="+expectedInventory.toString()+"<p>");
+			logger.info("Create job parameters for execution #1:<p>");
+			logger.info("javax.transaction.global.timeout=300<p>");
+			logger.info("commit.interval="+itemCount.toString()+"<p>");
+			logger.info("init.inventory.quantity="+initInventory.toString()+"<p>");
+			logger.info("forced.fail.count="+forcedFailCount.toString()+"<p>");
+			logger.info("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
+			logger.info("expected.inventory="+expectedInventory.toString()+"<p>");
 			jobParams.put("javax.transaction.global.timeout", "300");
 			jobParams.put("commit.interval", itemCount.toString());
 			jobParams.put("init.inventory.quantity", initInventory.toString());
@@ -363,12 +345,12 @@ public class TransactionTests {
 			jobParams.put("expected.inventory", expectedInventory.toString());
 
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			TCKJobExecutionWrapper jobExec = jobOp.startJobAndWaitForResult("job_chunk_globaltran",jobParams);
 			long jobInstanceId = jobExec.getInstanceId();
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
 			assertObjEquals(BatchStatus.FAILED, jobExec.getBatchStatus());
 			assertObjEquals("Inventory=" +expectedInventory + " InitialCheckpoint=" + null +" OrderCount="+ expectedCompletedOrders , jobExec.getExitStatus());
 
@@ -378,11 +360,11 @@ public class TransactionTests {
 			expectedInventory = TransactionTests.calculateGlobalTranExpectedInventory(expectedInventory, forcedFailCount, itemCount);
 			Integer expectedCompletedOrders2 = TransactionTests.calculateExpectedCompleteOrders(initInventory, forcedFailCount, itemCount);
 
-			Reporter.log("Invoke restartJobAndWaitForResult with id: " + jobInstanceId + "<p>");
+			logger.info("Invoke restartJobAndWaitForResult with id: " + jobInstanceId + "<p>");
 			JobExecution restartedJobExec = jobOp.restartJobAndWaitForResult(jobExec.getExecutionId(), jobParams);
 
-			Reporter.log("restarted job JobExecution getBatchStatus()="+restartedJobExec.getBatchStatus()+"<p>");
-			Reporter.log("restarted job JobExecution getExitStatus()="+restartedJobExec.getExitStatus()+"<p>");
+			logger.info("restarted job JobExecution getBatchStatus()="+restartedJobExec.getBatchStatus()+"<p>");
+			logger.info("restarted job JobExecution getExitStatus()="+restartedJobExec.getExitStatus()+"<p>");
 			assertObjEquals("Inventory=" +expectedInventory + " InitialCheckpoint=" + expectedCompletedOrders+" OrderCount="+ expectedCompletedOrders2, restartedJobExec.getExitStatus());
 			assertObjEquals(BatchStatus.COMPLETED, restartedJobExec.getBatchStatus());
 		} catch (Exception e) {
@@ -399,7 +381,7 @@ public class TransactionTests {
 	 *                 normally.
 	 */    
 	@Test
-	@org.junit.Test
+
 	public void testGlobalTranNoDelayLongTimeout() throws Exception {
 		String METHOD = "testGlobalTranNoDelayLongTimeout";
 		begin(METHOD);
@@ -421,23 +403,23 @@ public class TransactionTests {
 
 			Properties jobParams = new Properties();
 
-			Reporter.log("Create job parameters for execution #1:<p>");
-			Reporter.log("commit.interval="+itemCount.toString()+"<p>");
-			Reporter.log("init.inventory.quantity="+initInventory.toString()+"<p>");
-			Reporter.log("forced.fail.count="+forcedFailCount.toString()+"<p>");
-			Reporter.log("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
-			Reporter.log("expected.inventory="+expectedInventory.toString()+"<p>");
+			logger.info("Create job parameters for execution #1:<p>");
+			logger.info("commit.interval="+itemCount.toString()+"<p>");
+			logger.info("init.inventory.quantity="+initInventory.toString()+"<p>");
+			logger.info("forced.fail.count="+forcedFailCount.toString()+"<p>");
+			logger.info("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
+			logger.info("expected.inventory="+expectedInventory.toString()+"<p>");
 			jobParams.put("commit.interval", itemCount.toString());
 			jobParams.put("init.inventory.quantity", initInventory.toString());
 			jobParams.put("forced.fail.count", forcedFailCount.toString());
 			jobParams.put("dummy.delay.seconds", dummyDelay.toString());
 			jobParams.put("expected.inventory", expectedInventory.toString());
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			TCKJobExecutionWrapper jobExec = jobOp.startJobAndWaitForResult("job_chunk_globaltran_default",jobParams);
 			
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
 			assertObjEquals("Inventory=" +expectedInventory + " InitialCheckpoint=" + null +" OrderCount="+ expectedCompletedOrders , jobExec.getExitStatus());
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 
@@ -469,7 +451,7 @@ public class TransactionTests {
 	 *                 to hint at it and possibly catch an implementation doing something completely off-base.
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testGlobalTranLongDelayMixOfLongTimeoutStepsAndShortTimeoutSteps() throws Exception {
 		String METHOD = "testGlobalTranLongDelayMixOfLongTimeoutStepsAndShortTimeoutSteps";
 		begin(METHOD);
@@ -485,21 +467,21 @@ public class TransactionTests {
 
 			Properties jobParams = new Properties();
 
-			Reporter.log("Create job parameters for execution #1:<p>");
-			Reporter.log("commit.interval="+itemCount.toString()+"<p>");
-			Reporter.log("init.inventory.quantity="+initInventory.toString()+"<p>");
-			Reporter.log("forced.fail.count="+forcedFailCount.toString()+"<p>");
-			Reporter.log("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
+			logger.info("Create job parameters for execution #1:<p>");
+			logger.info("commit.interval="+itemCount.toString()+"<p>");
+			logger.info("init.inventory.quantity="+initInventory.toString()+"<p>");
+			logger.info("forced.fail.count="+forcedFailCount.toString()+"<p>");
+			logger.info("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
 			jobParams.put("commit.interval", itemCount.toString());
 			jobParams.put("init.inventory.quantity", initInventory.toString());
 			jobParams.put("forced.fail.count", forcedFailCount.toString());
 			jobParams.put("dummy.delay.seconds", dummyDelay.toString());
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			TCKJobExecutionWrapper jobExec = jobOp.startJobAndWaitForResult("job_chunk_globaltran_multiple_steps",jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 			// With test refactoring all orders will be processed, and all inventory depleted.
 			assertObjEquals("Inventory=0 InitialCheckpoint=null OrderCount="+ initInventory, jobExec.getExitStatus());
@@ -542,7 +524,7 @@ public class TransactionTests {
 	 *                 The long timeouts are longer than the "long" delay, so steps 2, 3 complete successfully.  
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testGlobalTranLongDelayMixOfLongTimeoutStepsAndShortTimeoutStepsCustomCheckpointAlgorithm() throws Exception {
 		String METHOD = "testGlobalTranLongDelayMixOfLongTimeoutStepsAndShortTimeoutStepsCustomCheckpointAlgorithm";
 		begin(METHOD);
@@ -558,21 +540,21 @@ public class TransactionTests {
 
 			Properties jobParams = new Properties();
 
-			Reporter.log("Create job parameters for execution #1:<p>");
-			Reporter.log("commit.interval="+itemCount.toString()+"<p>");
-			Reporter.log("init.inventory.quantity="+initInventory.toString()+"<p>");
-			Reporter.log("forced.fail.count="+forcedFailCount.toString()+"<p>");
-			Reporter.log("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
+			logger.info("Create job parameters for execution #1:<p>");
+			logger.info("commit.interval="+itemCount.toString()+"<p>");
+			logger.info("init.inventory.quantity="+initInventory.toString()+"<p>");
+			logger.info("forced.fail.count="+forcedFailCount.toString()+"<p>");
+			logger.info("dummy.delay.seconds="+dummyDelay.toString()+"<p>");
 			jobParams.put("commit.interval", itemCount.toString());
 			jobParams.put("init.inventory.quantity", initInventory.toString());
 			jobParams.put("forced.fail.count", forcedFailCount.toString());
 			jobParams.put("dummy.delay.seconds", dummyDelay.toString());
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 			TCKJobExecutionWrapper jobExec = jobOp.startJobAndWaitForResult("job_chunk_globaltran_multiple_steps-customCA",jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 			assertObjEquals("Inventory=0 InitialCheckpoint=null OrderCount="+ initInventory, jobExec.getExitStatus());
 			
@@ -630,8 +612,8 @@ public class TransactionTests {
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 

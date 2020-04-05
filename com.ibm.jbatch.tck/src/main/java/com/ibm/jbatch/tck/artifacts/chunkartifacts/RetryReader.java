@@ -34,8 +34,6 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.testng.Reporter;
-
 import com.ibm.jbatch.tck.artifacts.chunktypes.NumbersCheckpointData;
 import com.ibm.jbatch.tck.artifacts.chunktypes.NumbersRecord;
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
@@ -100,21 +98,21 @@ public class RetryReader extends AbstractItemReader {
 	public NumbersRecord readItem() throws Exception {
 		int i = readerIndex;
 		
-		Reporter.log("Reading item: " + readerIndex + "...<br>");
+		logger.info("Reading item: " + readerIndex + "...<br>");
 
 		// Throw an exception when forcedFailCount is reached
 		if (forcedFailCount != 0 && (readerIndex >= forcedFailCount) && (testState == STATE_NORMAL)) {
 			    //forcedFailCount = 0;
 			    failindex = readerIndex;
 			    testState = STATE_RETRY;
-			    Reporter.log("Fail on purpose NumbersRecord.readItem<p>");
+			    logger.info("Fail on purpose NumbersRecord.readItem<p>");
 				throw new MyParentException("Fail on purpose in NumbersRecord.readItem()");	
 				
 		} else if (forcedFailCount != 0 && (readerIndex >= forcedFailCount) && (testState == STATE_EXCEPTION)) {
 			failindex = readerIndex;
 			testState = STATE_SKIP;
 			forcedFailCount = 0;
-			Reporter.log("Test skip -- Fail on purpose NumbersRecord.readItem<p>");
+			logger.info("Test skip -- Fail on purpose NumbersRecord.readItem<p>");
 			throw new MyParentException("Test skip -- Fail on purpose in NumbersRecord.readItem()");	
 		}
 		
@@ -137,35 +135,33 @@ public class RetryReader extends AbstractItemReader {
 			}*/
 			
 			if (((Properties)stepCtx.getTransientUserData()).getProperty("retry.read.exception.invoked") != "true") {
-				Reporter.log("onRetryReadException not invoked<p>");
+				logger.info("onRetryReadException not invoked<p>");
 				throw new Exception("onRetryReadException not invoked");
 			} else {
-				Reporter.log("onRetryReadException was invoked<p>");
+				logger.info("onRetryReadException was invoked<p>");
 			}
 			
 			if (((Properties)stepCtx.getTransientUserData()).getProperty("retry.read.exception.match") != "true") {
-				Reporter.log("retryable exception does not match<p>");
+				logger.info("retryable exception does not match<p>");
 				throw new Exception("retryable exception does not match");
 			} else {
-				Reporter.log("Retryable exception matches<p>");
+				logger.info("Retryable exception matches<p>");
 			}
 			testState = STATE_EXCEPTION;
-			//Reporter.log("Test skip after retry -- Fail on purpose in NumbersRecord.readItem<p>");
-			//throw new MyParentException("Test skip after retry -- Fail on purpose in NumbersRecord.readItem()");	
 		}
 		else if(testState == STATE_SKIP) {
 			if (((Properties)stepCtx.getTransientUserData()).getProperty("skip.read.item.invoked") != "true") {
-				Reporter.log("onSkipReadItem not invoked<p>");
+				logger.info("onSkipReadItem not invoked<p>");
 				throw new Exception("onSkipReadItem not invoked");
 			} else {
-				Reporter.log("onSkipReadItem was invoked<p>");
+				logger.info("onSkipReadItem was invoked<p>");
 			}
 			
 			if (((Properties)stepCtx.getTransientUserData()).getProperty("skip.read.item.match") != "true") {
-				Reporter.log("skippable exception does not match<p>");
+				logger.info("skippable exception does not match<p>");
 				throw new Exception("skippable exception does not match");
 			} else {
-				Reporter.log("skippable exception matches<p>");
+				logger.info("skippable exception matches<p>");
 			}
 			testState = STATE_NORMAL;
 		}
@@ -192,7 +188,7 @@ public class RetryReader extends AbstractItemReader {
 			}
 					
 			readerIndex++;
-			Reporter.log("Read [item: " + i + " quantity: " + quantity + "]<p>");
+			logger.info("Read [item: " + i + " quantity: " + quantity + "]<p>");
 			return new NumbersRecord(i, quantity);
 		} catch (SQLException e) {
 			throw e;

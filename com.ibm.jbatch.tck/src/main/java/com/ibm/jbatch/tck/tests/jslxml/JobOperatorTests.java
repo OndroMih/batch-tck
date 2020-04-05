@@ -35,31 +35,16 @@ import javax.batch.runtime.JobInstance;
 import javax.batch.runtime.Metric;
 import javax.batch.runtime.StepExecution;
 
-import org.junit.BeforeClass;
-import org.testng.Reporter;
-import org.testng.annotations.AfterMethod;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
+import org.junit.jupiter.api.*;
 
 public class JobOperatorTests {
 
 	private final static Logger logger = Logger.getLogger(JobOperatorTests.class.getName());
 
-	private static JobOperatorBridge jobOp;
-
-	public static void setup(String[] args, Properties props) throws Exception {
-
-		String METHOD = "setup";
-
-		try {
-			jobOp = new JobOperatorBridge();
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
-	}
+	private JobOperatorBridge jobOp;
 
 	/* cleanup */
 	public void  cleanup()
@@ -67,23 +52,22 @@ public class JobOperatorTests {
 
 	}
 
-	@BeforeMethod
-	@BeforeClass
-	public static void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		jobOp = new JobOperatorBridge();
 	}
 
-	@AfterMethod
-	public static void tearDown() throws Exception {
+	@AfterEach
+	public void tearDown() throws Exception {
 	}
 
 	private void begin(String str) {
-		Reporter.log("Begin test method: " + str);
+		logger.info("Begin test method: " + str);
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -95,19 +79,19 @@ public class JobOperatorTests {
 	 * @throws JobStartException               
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobOperatorStart() throws Exception {
 
 		String METHOD = "testJobOperatorStart";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_1step.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_1step.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_1step");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -129,21 +113,21 @@ public class JobOperatorTests {
 	 *                 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobOperatorRestart() throws Exception {
 
 		String METHOD = "testJobOperatorRestart";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.fail=12<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-			Reporter.log("app.next.writepoints=10,15,20,25,30<p>");
-			Reporter.log("app.commitinterval=5<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.fail=12<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("app.next.writepoints=10,15,20,25,30<p>");
+			logger.info("app.commitinterval=5<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "12");
 			jobParams.put("app.arraysize", "30");
@@ -151,27 +135,27 @@ public class JobOperatorTests {
 			jobParams.put("app.next.writepoints", "10,15,20,25,30");
 			jobParams.put("app.commitinterval", "5");
 
-			Reporter.log("Locate job XML file: chunksize5commitinterval5.xml<p>");
+			logger.info("Locate job XML file: chunksize5commitinterval5.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
 			long jobInstanceId = execution1.getInstanceId();
 			long lastExecutionId = execution1.getExecutionId();
 			TCKJobExecutionWrapper exec = null;
-			Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-			Reporter.log("Got Job execution id: " + lastExecutionId + "<p>");
+			logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+			logger.info("Got Job execution id: " + lastExecutionId + "<p>");
 			{
-				Reporter.log("Invoke restartJobAndWaitForResult for execution id: " + lastExecutionId + "<p>");
+				logger.info("Invoke restartJobAndWaitForResult for execution id: " + lastExecutionId + "<p>");
 				exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParams);
-				Reporter.log("execution #2 JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
-				Reporter.log("execution #2 JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
-				Reporter.log("execution #2 Job instance id="+exec.getInstanceId()+"<p>");
+				logger.info("execution #2 JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
+				logger.info("execution #2 JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
+				logger.info("execution #2 Job instance id="+exec.getInstanceId()+"<p>");
 				assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, exec.getBatchStatus());
 				assertWithMessage("Testing execution #2", "COMPLETED", exec.getExitStatus());
 				assertWithMessage("Testing execution #2", jobInstanceId, exec.getInstanceId());  
@@ -204,21 +188,21 @@ public class JobOperatorTests {
 	 *                 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobOperatorRestartAlreadyCompleteException() throws Exception {
 
 		String METHOD = "testJobOperatorRestartAlreadyCompleteException";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.fail=12<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-			Reporter.log("app.next.writepoints=10,15,20,25,30<p>");
-			Reporter.log("app.commitinterval=5<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.fail=12<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("app.next.writepoints=10,15,20,25,30<p>");
+			logger.info("app.commitinterval=5<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "12");
 			jobParams.put("app.arraysize", "30");
@@ -226,43 +210,43 @@ public class JobOperatorTests {
 			jobParams.put("app.next.writepoints", "10,15,20,25,30");
 			jobParams.put("app.commitinterval", "5");
 
-			Reporter.log("Locate job XML file: chunksize5commitinterval5.xml<p>");
+			logger.info("Locate job XML file: chunksize5commitinterval5.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
 			long jobInstanceId = execution1.getInstanceId();
 			long firstExecutionId = execution1.getExecutionId();
 			TCKJobExecutionWrapper exec = null;
-			Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-			Reporter.log("Got Job execution id: " + firstExecutionId + "<p>");
+			logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+			logger.info("Got Job execution id: " + firstExecutionId + "<p>");
 			{
-				Reporter.log("Invoke restartJobAndWaitForResult for execution id: " + firstExecutionId + "<p>");
+				logger.info("Invoke restartJobAndWaitForResult for execution id: " + firstExecutionId + "<p>");
 				exec = jobOp.restartJobAndWaitForResult(firstExecutionId, jobParams);
-				Reporter.log("execution #2 JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
-				Reporter.log("execution #2 JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
-				Reporter.log("execution #2 Job instance id="+exec.getInstanceId()+"<p>");
+				logger.info("execution #2 JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
+				logger.info("execution #2 JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
+				logger.info("execution #2 Job instance id="+exec.getInstanceId()+"<p>");
 				assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, exec.getBatchStatus());
 				assertWithMessage("Testing execution #2", "COMPLETED", exec.getExitStatus());
 				assertWithMessage("Testing execution #2", jobInstanceId, exec.getInstanceId());  
 			}
 
 			long secondExecutionId = exec.getExecutionId();
-			Reporter.log("execution #2 Job execution id="+ secondExecutionId+"<p>");
+			logger.info("execution #2 Job execution id="+ secondExecutionId+"<p>");
 
 
 			// Restart from second execution id (not first, see strategy comment above).
-			Reporter.log("Now invoke restart again, expecting JobExecutionAlreadyCompleteException, for execution id: " + secondExecutionId + "<p>");
+			logger.info("Now invoke restart again, expecting JobExecutionAlreadyCompleteException, for execution id: " + secondExecutionId + "<p>");
 			boolean seenException = false;
 			try {
 				jobOp.restartJobAndWaitForResult(secondExecutionId, jobParams);
 			} catch (JobExecutionAlreadyCompleteException e) {
-				Reporter.log("Caught JobExecutionAlreadyCompleteException as expected<p>");
+				logger.info("Caught JobExecutionAlreadyCompleteException as expected<p>");
 				seenException = true;
 			}
 			assertWithMessage("Caught JobExecutionAlreadyCompleteException for bad restart #2" , seenException);
@@ -289,7 +273,7 @@ public class JobOperatorTests {
 	 *                 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobOperatorAbandonJobDuringARestart() throws Exception {
 
 		String METHOD = "testJobOperatorAbandonJobDuringARestart";
@@ -298,50 +282,50 @@ public class JobOperatorTests {
 		String DEFAULT_SLEEP_TIME = "5000";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
 			jobParams.put("execution.number", "1");
-			Reporter.log("execution.number=1<p>");
+			logger.info("execution.number=1<p>");
 			String sleepTime = System.getProperty("JobOperatorTests.testJobOperatorTestAbandonActiveRestart.sleep",DEFAULT_SLEEP_TIME);
 			jobParams.put("sleep.time", sleepTime);
-			Reporter.log("sleep.time=" + sleepTime + "<p>");
+			logger.info("sleep.time=" + sleepTime + "<p>");
 			
 
-			Reporter.log("Locate job XML file: abandonActiveRestart.xml<p>");
+			logger.info("Locate job XML file: abandonActiveRestart.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("abandonActiveRestart", jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
 			long jobInstanceId = execution1.getInstanceId();
 			long firstExecutionId = execution1.getExecutionId();
 			TCKJobExecutionWrapper exec = null;
-			Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-			Reporter.log("Got Job execution id: " + firstExecutionId + "<p>");
+			logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+			logger.info("Got Job execution id: " + firstExecutionId + "<p>");
 			
 			jobParams = new Properties();
 			jobParams.put("execution.number", "2");
-			Reporter.log("execution.number=2<p>");
+			logger.info("execution.number=2<p>");
 			sleepTime = System.getProperty("JobOperatorTests.testJobOperatorTestAbandonActiveRestart.sleep",DEFAULT_SLEEP_TIME);
 			jobParams.put("sleep.time", sleepTime);
-			Reporter.log("sleep.time=" + sleepTime + "<p>");
+			logger.info("sleep.time=" + sleepTime + "<p>");
 			
-			Reporter.log("Invoke restartJobWithoutWaitingForResult for execution id: " + firstExecutionId + "<p>");
+			logger.info("Invoke restartJobWithoutWaitingForResult for execution id: " + firstExecutionId + "<p>");
 			exec = jobOp.restartJobWithoutWaitingForResult(firstExecutionId, jobParams);
 			long secondExecutionId = exec.getExecutionId();			
 			{
-				Reporter.log("Invoke restartJobAndWaitForResult for execution id: " + firstExecutionId + "<p>");
+				logger.info("Invoke restartJobAndWaitForResult for execution id: " + firstExecutionId + "<p>");
 				
 				boolean seen = false;
 				try {
 					jobOp.abandonJobExecution(secondExecutionId);
 				}
 				catch (JobExecutionIsRunningException jobRunningEx){
-					Reporter.log("Caught JobExecutionIsRunningException as expected<p>");
+					logger.info("Caught JobExecutionIsRunningException as expected<p>");
 					seen = true;
 				}
 				assertWithMessage("Did not see expected JobExecutionIsRunningException for abandon attempt during restart" , seen);
@@ -370,7 +354,7 @@ public class JobOperatorTests {
 	 *                 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobOperatorRestartJobAlreadyAbandoned() throws Exception {
 
 		String METHOD = "testJobOperatorRestartAlreadyCompleteException";
@@ -379,22 +363,22 @@ public class JobOperatorTests {
 		String DEFAULT_SLEEP_TIME = "1";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
 			jobParams.put("execution.number", "1");
-			Reporter.log("execution.number=1<p>");
+			logger.info("execution.number=1<p>");
 			String sleepTime = System.getProperty("JobOperatorTests.testJobOperatorTestRestartAlreadAbandonedJob.sleep",DEFAULT_SLEEP_TIME);
 			jobParams.put("sleep.time", sleepTime);
-			Reporter.log("sleep.time=" + sleepTime + "<p>");
+			logger.info("sleep.time=" + sleepTime + "<p>");
 			
 
-			Reporter.log("Locate job XML file: abandonActiveRestart.xml<p>");
+			logger.info("Locate job XML file: abandonActiveRestart.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("abandonActiveRestart", jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 			long jobInstanceId = execution1.getInstanceId();
@@ -402,24 +386,24 @@ public class JobOperatorTests {
 			
 			jobOp.abandonJobExecution(firstExecutionId);
 			
-			Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-			Reporter.log("Got Job execution id: " + firstExecutionId + "<p>");
+			logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+			logger.info("Got Job execution id: " + firstExecutionId + "<p>");
 			
 			jobParams = new Properties();
 			jobParams.put("execution.number", "2");
-			Reporter.log("execution.number=2<p>");
+			logger.info("execution.number=2<p>");
 			
-			Reporter.log("Invoke restartJobWithoutWaitingForResult for execution id: " + firstExecutionId + "<p>");
+			logger.info("Invoke restartJobWithoutWaitingForResult for execution id: " + firstExecutionId + "<p>");
 						
 			{
-				Reporter.log("Invoke restartJobAndWaitForResult for execution id: " + firstExecutionId + "<p>");
+				logger.info("Invoke restartJobAndWaitForResult for execution id: " + firstExecutionId + "<p>");
 				
 				boolean seen = false;
 				try {
 					jobOp.restartJobWithoutWaitingForResult(firstExecutionId, jobParams);
 				}
 				catch (JobRestartException jobRestartEx){
-					Reporter.log("Caught JobRestartException as expected<p>");
+					logger.info("Caught JobRestartException as expected<p>");
 					seen = true;
 				}
 				assertWithMessage("Caught JobRestartException for abandon attempt during restart" , seen);
@@ -439,7 +423,7 @@ public class JobOperatorTests {
 	 * batch status.
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testInvokeJobWithUserStop() throws Exception {
 		String METHOD = "testInvokeJobWithUserStop";
 		begin(METHOD);
@@ -447,25 +431,25 @@ public class JobOperatorTests {
 		final String DEFAULT_SLEEP_TIME = "1000";
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_longrunning.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_longrunning.xml<p>");
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParameters = new Properties();
-			Reporter.log("run.indefinitely=true<p>");
+			logger.info("run.indefinitely=true<p>");
 			jobParameters.setProperty("run.indefinitely" , "true");
 
-			Reporter.log("Invoking startJobWithoutWaitingForResult for Execution #1<p>");
+			logger.info("Invoking startJobWithoutWaitingForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobWithoutWaitingForResult("job_batchlet_longrunning", jobParameters);
 
 			int sleepTime = Integer.parseInt(System.getProperty("JobOperatorTests.testInvokeJobWithUserStop.sleep",DEFAULT_SLEEP_TIME));
-			Reporter.log("Thread.sleep(" +  sleepTime + ")<p>");
+			logger.info("Thread.sleep(" +  sleepTime + ")<p>");
 			Thread.sleep(sleepTime);
 
-			Reporter.log("Invoking stopJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking stopJobAndWaitForResult for Execution #1<p>");
 			jobOp.stopJobAndWaitForResult(jobExec);
 
 			JobExecution jobExec2 = jobOp.getJobExecution(jobExec.getExecutionId());
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec2.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec2.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.STOPPED, jobExec2.getBatchStatus());
 
 		} catch (Exception e) {
@@ -483,19 +467,19 @@ public class JobOperatorTests {
 	 * @throws Exception
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobOperatorGetStepExecutions() throws Exception {
 
 		String METHOD = "testJobOperatorGetStepExecutions";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_1step.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_1step.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_1step");
 
-			Reporter.log("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
+			logger.info("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
 			List<StepExecution> stepExecutions = jobOp.getStepExecutions(jobExec.getExecutionId());
 
 			assertObjEquals(1, stepExecutions.size());
@@ -503,11 +487,11 @@ public class JobOperatorTests {
 			for (StepExecution step : stepExecutions) {
 				// make sure all steps finish successfully
 				showStepState(step);
-				Reporter.log("Step status="+step.getBatchStatus()+"<p>");
+				logger.info("Step status="+step.getBatchStatus()+"<p>");
 				assertObjEquals(BatchStatus.COMPLETED, step.getBatchStatus());
 			}
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -527,7 +511,7 @@ public class JobOperatorTests {
 	 *                 a big deal.
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobOpGetJobNames() throws Exception {
 
 		String METHOD = "testJobOpGetJobNames";
@@ -536,13 +520,13 @@ public class JobOperatorTests {
 		String jobName ="job_unique_get_job_names";
 		
 		try {
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			List<String> jobNames = jobOp.getJobNames();
 			jobOp.startJobWithoutWaitingForResult("job_unique_get_job_names");
 			if (jobNames.contains(jobName)) {
-				Reporter.log("JobOperator.getJobNames() already includes " + jobName + ", test is not so useful<p>");
+				logger.info("JobOperator.getJobNames() already includes " + jobName + ", test is not so useful<p>");
 			} else {
-				Reporter.log("JobOperator.getJobNames() does not include " + jobName + " yet.<p>");
+				logger.info("JobOperator.getJobNames() does not include " + jobName + " yet.<p>");
 			}
 
 			jobNames = jobOp.getJobNames();
@@ -561,16 +545,16 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testAbandoned() throws Exception {
 
 		String METHOD = "testAbandoned";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_4steps.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_4steps.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_4steps");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 
@@ -594,7 +578,7 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test  
-	@org.junit.Test
+
 	public void testJobOpgetJobInstanceCount() throws Exception {
 		String METHOD = "testJobOpgetJobInstanceCount";
 		begin(METHOD);
@@ -609,33 +593,33 @@ public class JobOperatorTests {
 				// Can continue.
 			}
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.faile=12<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-			Reporter.log("app.commitinterval=5<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.faile=12<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("app.commitinterval=5<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "12");
 			jobParams.put("app.arraysize", "30");
 			jobParams.put("app.writepoints", "0,5,10,15,20,25,30");
 			jobParams.put("app.commitinterval", "5");
 
-			Reporter.log("Locate job XML file: chunksize5commitinterval5.xml<p>");
+			logger.info("Locate job XML file: chunksize5commitinterval5.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
 			long jobInstanceId = execution1.getInstanceId();
 			long lastExecutionId = execution1.getExecutionId();
-			Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-			Reporter.log("Got Job execution id: " + lastExecutionId + "<p>");
+			logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+			logger.info("Got Job execution id: " + lastExecutionId + "<p>");
 
 			int countTrackerAFTER = jobOp.getJobInstanceCount("chunksize5commitinterval5");
 
@@ -644,7 +628,7 @@ public class JobOperatorTests {
 			List<String> jobNames = jobOp.getJobNames();
 
 			for (String jobname : jobNames) {
-				Reporter.log(jobname + " instance count : " + jobOp.getJobInstanceCount(jobname) + " - ");
+				logger.info(jobname + " instance count : " + jobOp.getJobInstanceCount(jobname) + " - ");
 			}
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -661,7 +645,7 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test  
-	@org.junit.Test
+
 	public void testJobOpgetJobInstanceCountException() throws Exception {
 		String METHOD = "testJobOpgetJobInstanceCountException";
 		begin(METHOD);
@@ -675,39 +659,39 @@ public class JobOperatorTests {
 				// Can continue.
 			}
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.faile=12<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-			Reporter.log("app.commitinterval=5<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.faile=12<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("app.commitinterval=5<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "12");
 			jobParams.put("app.arraysize", "30");
 			jobParams.put("app.writepoints", "0,5,10,15,20,25,30");
 			jobParams.put("app.commitinterval", "5");
 
-			Reporter.log("Locate job XML file: chunksize5commitinterval5.xml<p>");
+			logger.info("Locate job XML file: chunksize5commitinterval5.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
 			long jobInstanceId = execution1.getInstanceId();
 			long lastExecutionId = execution1.getExecutionId();
-			Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-			Reporter.log("Got Job execution id: " + lastExecutionId + "<p>");
+			logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+			logger.info("Got Job execution id: " + lastExecutionId + "<p>");
 
 			boolean seenException = false;
 			try {
 				int countTrackerAFTER = jobOp.getJobInstanceCount("NoSuchJob");
 			} catch (NoSuchJobException noJobEx) {
-				Reporter.log("Confirmed we caught NoSuchJobException<p>");
+				logger.info("Confirmed we caught NoSuchJobException<p>");
 				seenException = true;
 			}
 			assertWithMessage("Saw NoSuchJobException for job 'NoSuchJob'", seenException);
@@ -728,7 +712,7 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test  
-	@org.junit.Test
+
 	public void testJobOpgetJobInstances() throws Exception {
 		String METHOD = " testJobOpgetJobInstances";
 		begin(METHOD);
@@ -741,27 +725,27 @@ public class JobOperatorTests {
 
 			try {
 				countTrackerBEFORE = jobOp.getJobInstanceCount("chunksize5commitinterval5");
-				Reporter.log("Before test ran the JobInstance count for chunksize5commitinterval5 was " + countTrackerBEFORE +"<p>");
+				logger.info("Before test ran the JobInstance count for chunksize5commitinterval5 was " + countTrackerBEFORE +"<p>");
 			} catch (NoSuchJobException e) {
-				Reporter.log("Not an error, but just the first time executing this job <p>");
+				logger.info("Not an error, but just the first time executing this job <p>");
 			}
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.faile=12<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-			Reporter.log("app.commitinterval=5<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.faile=12<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("app.commitinterval=5<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "12");
 			jobParams.put("app.arraysize", "30");
 			jobParams.put("app.writepoints", "0,5,10,15,20,25,30");
 			jobParams.put("app.commitinterval", "5");
 
-			Reporter.log("Locate job XML file: chunksize5commitinterval5.xml<p>");
+			logger.info("Locate job XML file: chunksize5commitinterval5.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			for (int i=0; i < submitTimes; i++) {
 				jobOp.startJobWithoutWaitingForResult("chunksize5commitinterval5", jobParams);
 			}
@@ -773,11 +757,11 @@ public class JobOperatorTests {
 				assertWithMessage("Check that we see: " + submitTimes + " new submissions", 
 						submitTimes, countTrackerAFTER - countTrackerBEFORE);
 			} catch (NoSuchJobException noJobEx) {
-				Reporter.log("Failing test, caught NoSuchJobException<p>");
+				logger.info("Failing test, caught NoSuchJobException<p>");
 				throw noJobEx;
 			}
 
-			Reporter.log("Size of Job Instances list = " + jobInstances.size() + "<p>");
+			logger.info("Size of Job Instances list = " + jobInstances.size() + "<p>");
 			assertWithMessage("Testing that a list of Job Instances were obtained", 10, jobInstances.size());
 
 		} catch (Exception e) {
@@ -796,20 +780,20 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test  
-	@org.junit.Test
+
 	public void testJobOpgetJobInstancesException() throws Exception {
 		String METHOD = "testJobOpgetJobInstancesException";
 		begin(METHOD);
 
 		try {
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.faile=12<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-			Reporter.log("app.commitinterval=5<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.faile=12<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("app.commitinterval=5<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "12");
 			jobParams.put("app.arraysize", "30");
@@ -817,13 +801,13 @@ public class JobOperatorTests {
 			jobParams.put("app.commitinterval", "5");
 
 
-			Reporter.log("Locate job XML file: /chunksize5commitinterval5.xml<p>");
+			logger.info("Locate job XML file: /chunksize5commitinterval5.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
@@ -833,7 +817,7 @@ public class JobOperatorTests {
 				jobIds = jobOp.getJobInstances("NoSuchJob", 0, 12);
 			} catch (NoSuchJobException noJobEx) {
 				seenException = true;
-				Reporter.log("Confirmed we caught NoSuchJobException<p>");
+				logger.info("Confirmed we caught NoSuchJobException<p>");
 			}
 			assertWithMessage("Saw NoSuchJobException for job 'NoSuchJob'", seenException);
 		} catch (Exception e) {
@@ -853,21 +837,21 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test  
-	@org.junit.Test
+
 	public void testJobOperatorGetParameters() throws Exception {
 		String METHOD = "testJobOperatorGetParameters";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties originalJobParams = new Properties();
 			Properties restartJobParams = null;
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.fail=12<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-			Reporter.log("app.next.writepoints=10,15,20,25,30<p>");
-			Reporter.log("app.commitinterval=5<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.fail=12<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("app.next.writepoints=10,15,20,25,30<p>");
+			logger.info("app.commitinterval=5<p>");
 			originalJobParams.put("execution.number", "1");
 			originalJobParams.put("readrecord.fail", "12");
 			originalJobParams.put("app.arraysize", "30");
@@ -879,33 +863,33 @@ public class JobOperatorTests {
 			String N1="extra.parm.name1";  String V1="extra.parm.value1";
 			String N2="extra.parm.name2";  String V2="extra.parm.value2";
 
-			Reporter.log("Locate job XML file: chunksize5commitinterval5.xml<p>");
+			logger.info("Locate job XML file: chunksize5commitinterval5.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", originalJobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
 			long jobInstanceId = execution1.getInstanceId();
 			long lastExecutionId = execution1.getExecutionId();
 			TCKJobExecutionWrapper execution2 = null;
-			Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-			Reporter.log("Got Job execution id: " + lastExecutionId + "<p>");
+			logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+			logger.info("Got Job execution id: " + lastExecutionId + "<p>");
 			{
-				Reporter.log("Invoke clone original job execution parameters<p>");
+				logger.info("Invoke clone original job execution parameters<p>");
 				// Shallow copy is OK for simple <String,String> of java.util.Properties
 				restartJobParams = (Properties)originalJobParams.clone(); 
-				Reporter.log("Put some extra parms in the restart execution<p>");
+				logger.info("Put some extra parms in the restart execution<p>");
 				restartJobParams.put(N1, V1);
 				restartJobParams.put(N2, V2);
-				Reporter.log("Invoke restartJobAndWaitForResult for execution id: " + lastExecutionId + "<p>");
+				logger.info("Invoke restartJobAndWaitForResult for execution id: " + lastExecutionId + "<p>");
 				execution2 = jobOp.restartJobAndWaitForResult(lastExecutionId, restartJobParams);
-				Reporter.log("execution #2 JobExecution getBatchStatus()="+execution2.getBatchStatus()+"<p>");
-				Reporter.log("execution #2 JobExecution getExitStatus()="+execution2.getExitStatus()+"<p>");
-				Reporter.log("execution #2 Job instance id="+execution2.getInstanceId()+"<p>");
+				logger.info("execution #2 JobExecution getBatchStatus()="+execution2.getBatchStatus()+"<p>");
+				logger.info("execution #2 JobExecution getExitStatus()="+execution2.getExitStatus()+"<p>");
+				logger.info("execution #2 Job instance id="+execution2.getInstanceId()+"<p>");
 				assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, execution2.getBatchStatus());
 				assertWithMessage("Testing execution #2", "COMPLETED", execution2.getExitStatus());
 				assertWithMessage("Testing execution #2", jobInstanceId, execution2.getInstanceId());  
@@ -915,17 +899,17 @@ public class JobOperatorTests {
 			Properties jobParamsFromJobOperator = jobOp.getParameters(execution1.getExecutionId());
 			Properties jobParamsFromJobExecution = execution1.getJobParameters();
   			assertWithMessage("Comparing original job params with jobOperator.getParameters", originalJobParams, jobParamsFromJobOperator);
-			Reporter.log("JobOperator.getParameters() matches for original execution <p>");
+			logger.info("JobOperator.getParameters() matches for original execution <p>");
 			assertWithMessage("Comparing original job params with jobExecution.getParameters", originalJobParams, jobParamsFromJobExecution);
-			Reporter.log("JobExecution.getParameters() matches for original execution <p>");
+			logger.info("JobExecution.getParameters() matches for original execution <p>");
 			
 			// Test restart execution
 			Properties restartJobParamsFromJobOperator = jobOp.getParameters(execution2.getExecutionId());
 			Properties restartJobParamsFromJobExecution = execution2.getJobParameters();
 			assertWithMessage("Comparing restart job params with jobOperator.getParameters", restartJobParams, restartJobParamsFromJobOperator);
-			Reporter.log("JobOperator.getParameters() matches for restart execution <p>");
+			logger.info("JobOperator.getParameters() matches for restart execution <p>");
 			assertWithMessage("Comparing restart job params with jobExecution.getParameters", restartJobParams, restartJobParamsFromJobExecution);
-			Reporter.log("JobExecution.getParameters() matches for restart execution <p>");
+			logger.info("JobExecution.getParameters() matches for restart execution <p>");
 			
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -945,66 +929,66 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test  
-	@org.junit.Test
+
 	public void testJobOperatorGetJobInstances() throws Exception {
 		String METHOD = "testJobOperatorGetJobInstances";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.fail=31<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-			Reporter.log("app.commitinterval=5<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.fail=31<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("app.commitinterval=5<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "31");
 			jobParams.put("app.arraysize", "30");
 			jobParams.put("app.writepoints", "0,5,10,15,20,25,30");
 			jobParams.put("app.commitinterval", "5");
 
-			Reporter.log("Locate job XML file: chunksize5commitinterval5.xml<p>");
+			logger.info("Locate job XML file: chunksize5commitinterval5.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "COMPLETED", execution1.getExitStatus());
 
-			Reporter.log("Create job parameters for execution #2:<p>");
+			logger.info("Create job parameters for execution #2:<p>");
 			jobParams = new Properties();
-			Reporter.log("execution.number=2<p>");
-			Reporter.log("readrecord.fail=31<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=10,15,20,25,30<p>");
-			Reporter.log("app.commitinterval=5<p>");
+			logger.info("execution.number=2<p>");
+			logger.info("readrecord.fail=31<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=10,15,20,25,30<p>");
+			logger.info("app.commitinterval=5<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "31");
 			jobParams.put("app.arraysize", "30");
 			jobParams.put("app.writepoints", "0,5,10,15,20,25,30");
 			jobParams.put("app.commitinterval", "5");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #2<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #2<p>");
 			JobExecution execution2 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", jobParams);
-			Reporter.log("execution #2 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #2 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #2 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #2 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, execution2.getBatchStatus());
 			assertWithMessage("Testing execution #2", "COMPLETED", execution2.getExitStatus());
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #3<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #3<p>");
 			JobExecution execution3 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", jobParams);
-			Reporter.log("execution #3 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #3 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #3 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #3 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #3", BatchStatus.COMPLETED, execution3.getBatchStatus());
 			assertWithMessage("Testing execution #3", "COMPLETED", execution3.getExitStatus());
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #4<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #4<p>");
 			JobExecution execution4 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", jobParams);
-			Reporter.log("execution #4 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #4 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #4 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #4 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #4", BatchStatus.COMPLETED, execution4.getBatchStatus());
 			assertWithMessage("Testing execution #4", "COMPLETED", execution4.getExitStatus());
 
@@ -1021,8 +1005,8 @@ public class JobOperatorTests {
 			assertWithMessage("job instances should be equal", jobInstances012.get(2).getInstanceId()==jobInstances123.get(1).getInstanceId()); 
 			assertWithMessage("job instances should not be equal", jobInstances012.get(2).getInstanceId()!=jobInstances123.get(2).getInstanceId()); 
 
-			Reporter.log("Size of jobInstancesList = " + jobInstances012.size() + "<p>");
-			Reporter.log("Testing retrieval of the JobInstances list, size = " + jobInstances012.size() + "<p>");
+			logger.info("Size of jobInstancesList = " + jobInstances012.size() + "<p>");
+			logger.info("Testing retrieval of the JobInstances list, size = " + jobInstances012.size() + "<p>");
 			assertWithMessage("Testing retrieval of the JobInstances list", jobInstances012.size() > 0);
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -1041,7 +1025,7 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobOperatorGetRunningJobExecutions() throws Exception {
 		String METHOD = "testJobOperatorGetRunningJobExecutions";
 		begin(METHOD);
@@ -1050,25 +1034,25 @@ public class JobOperatorTests {
 		final String DEFAULT_APP_TIME_INTERVAL = "10000";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
 			String timeinterval = System.getProperty("JobOperatorTests.testJobOperatorGetRunningJobExecutions.app.timeinterval",DEFAULT_APP_TIME_INTERVAL);
 			
 			jobParams.put("app.timeinterval", timeinterval);
 
-			Reporter.log("Invoke startJobWithoutWaitingForResult for execution #1<p>");
+			logger.info("Invoke startJobWithoutWaitingForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobWithoutWaitingForResult("job_batchlet_step_listener", jobParams);
 
 			Properties newJobParameters = new Properties();
 			newJobParameters.put("app.timeinterval", timeinterval);
-			Reporter.log("Invoke startJobWithoutWaitingForResult<p>");
+			logger.info("Invoke startJobWithoutWaitingForResult<p>");
 
 			JobExecution exec = jobOp.startJobWithoutWaitingForResult("job_batchlet_step_listener", newJobParameters);
 
 			// Sleep to give the runtime the chance to start the job.  The job has a delay built into the stepListener afterStep() 
 			// so we aren't worried about the job finishing early leaving zero running executions.
 			int sleepTime = Integer.parseInt(System.getProperty("ExecutionTests.testJobOperatorGetRunningJobExecutions.sleep",DEFAULT_SLEEP_TIME));
-			Reporter.log("Thread.sleep(" + sleepTime + ")<p>");
+			logger.info("Thread.sleep(" + sleepTime + ")<p>");
 			Thread.sleep(sleepTime);
 
 			List<Long> jobExecutions = jobOp.getRunningExecutions("job_batchlet_step_listener");
@@ -1091,7 +1075,7 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobOperatorGetRunningJobInstancesException() throws Exception {
 		String METHOD = "testJobOperatorGetRunningJobInstancesException";
 		begin(METHOD);
@@ -1099,29 +1083,29 @@ public class JobOperatorTests {
 		final String DEFAULT_APP_TIME_INTERVAL = "10000";
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
 		
 			String timeinterval = System.getProperty("JobOperatorTests.testJobOperatorGetRunningJobInstancesException.app.timeinterval",DEFAULT_APP_TIME_INTERVAL);
 			
 			jobParams.put("app.timeinterval", timeinterval);
 
-			Reporter.log("Invoke startJobWithoutWaitingForResult for execution #1<p>");
+			logger.info("Invoke startJobWithoutWaitingForResult for execution #1<p>");
 			JobExecution execution1 = jobOp.startJobWithoutWaitingForResult("job_batchlet_step_listener", jobParams);
 
 			Properties restartJobParameters = new Properties();
 			restartJobParameters.put("app.timeinterval", timeinterval);
 
-			Reporter.log("Invoke startJobWithoutWaitingForResult");
+			logger.info("Invoke startJobWithoutWaitingForResult");
 			JobExecution exec = jobOp.startJobWithoutWaitingForResult("job_batchlet_step_listener", restartJobParameters);
 
 			boolean seenException = false;
 			try {
-				Reporter.log("Check for an instance of a non-existent job<p>");
+				logger.info("Check for an instance of a non-existent job<p>");
 				jobOp.getRunningExecutions("JOBNAMEDOESNOTEXIST");
 			}
 			catch (NoSuchJobException e) {
-				Reporter.log("Confirmed that exception caught is an instanceof NoSuchJobException<p>");
+				logger.info("Confirmed that exception caught is an instanceof NoSuchJobException<p>");
 				seenException = true;
 			}
 			assertWithMessage("Saw NoSuchJobException for job 'JOBNAMEDOESNOTEXIST'", seenException);
@@ -1142,20 +1126,20 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test 
-	@org.junit.Test
+
 	public void testJobOperatorGetJobExecution() throws Exception {
 		String METHOD = "testJobOperatorGetJobExecution";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
-			Reporter.log("readrecord.fail=12<p>");
-			Reporter.log("app.arraysize=30<p>");
-			Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-			Reporter.log("app.next.writepoints=10,15,20,25,30<p>");
-			Reporter.log("app.commitinterval=5<p>");
+			logger.info("execution.number=1<p>");
+			logger.info("readrecord.fail=12<p>");
+			logger.info("app.arraysize=30<p>");
+			logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+			logger.info("app.next.writepoints=10,15,20,25,30<p>");
+			logger.info("app.commitinterval=5<p>");
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "12");
 			jobParams.put("app.arraysize", "30");
@@ -1163,13 +1147,13 @@ public class JobOperatorTests {
 			jobParams.put("app.next.writepoints", "10,15,20,25,30");
 			jobParams.put("app.commitinterval", "5");
 
-			Reporter.log("Locate job XML file: chunksize5commitinterval5.xml<p>");
+			logger.info("Locate job XML file: chunksize5commitinterval5.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunksize5commitinterval5", jobParams);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
@@ -1179,20 +1163,20 @@ public class JobOperatorTests {
 
 			{
 
-				Reporter.log("Invoke restartJobAndWaitForResult for execution id: " + lastExecutionId + "<p>");
+				logger.info("Invoke restartJobAndWaitForResult for execution id: " + lastExecutionId + "<p>");
 				exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParams);
 				lastExecutionId = exec.getExecutionId();
-				Reporter.log("execution #2 JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
-				Reporter.log("execution #2 JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
-				Reporter.log("execution #2 Job instance id="+exec.getInstanceId()+"<p>");
+				logger.info("execution #2 JobExecution getBatchStatus()="+exec.getBatchStatus()+"<p>");
+				logger.info("execution #2 JobExecution getExitStatus()="+exec.getExitStatus()+"<p>");
+				logger.info("execution #2 Job instance id="+exec.getInstanceId()+"<p>");
 				assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, exec.getBatchStatus());
 				assertWithMessage("Testing execution #2", "COMPLETED", exec.getExitStatus());
 				assertWithMessage("Testing execution #2", jobInstanceId, exec.getInstanceId());  
 			}
 
-			Reporter.log("Testing retrieval of a JobExecution obj");
+			logger.info("Testing retrieval of a JobExecution obj");
 			JobExecution jobEx = jobOp.getJobExecution(lastExecutionId);
-			Reporter.log("Status retreived from JobExecution obj: " + jobEx.getBatchStatus() + "<p>");
+			logger.info("Status retreived from JobExecution obj: " + jobEx.getBatchStatus() + "<p>");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
@@ -1211,14 +1195,14 @@ public class JobOperatorTests {
 	 * 
 	 */
 	@Test 
-	@org.junit.Test
+
 	public void testJobOperatorGetJobExecutions() throws Exception {
 		String METHOD = "testJobOperatorGetJobExecutions";
 		begin(METHOD);
 
 		String jobName = "chunksize5commitinterval5";
 		try {
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParams = new Properties();
 			jobParams.put("execution.number", "1");
 			jobParams.put("readrecord.fail", "12");
@@ -1227,13 +1211,13 @@ public class JobOperatorTests {
 			jobParams.put("app.next.writepoints", "10,15,20,25,30");
 			jobParams.put("app.commitinterval", "5");
 
-			Reporter.log("Locate job XML file: chunksize5commitinterval5.xml<p>");
+			logger.info("Locate job XML file: chunksize5commitinterval5.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult(jobName, jobParams);
 		    
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+execution1.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+execution1.getExitStatus()+"<p>");
 			assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
 			assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
@@ -1241,11 +1225,11 @@ public class JobOperatorTests {
 			TCKJobExecutionWrapper execution2 = null;
 
 			{
-				Reporter.log("Invoke restartJobAndWaitForResult for execution id: " + execution1ID + "<p>");
+				logger.info("Invoke restartJobAndWaitForResult for execution id: " + execution1ID + "<p>");
 				execution2= jobOp.restartJobAndWaitForResult(execution1ID, jobParams);
-				Reporter.log("execution #2 JobExecution getBatchStatus()="+execution2.getBatchStatus()+"<p>");
-				Reporter.log("execution #2 JobExecution getExitStatus()="+execution2.getExitStatus()+"<p>");
-				Reporter.log("execution #2 Job instance id="+execution2.getInstanceId()+"<p>");
+				logger.info("execution #2 JobExecution getBatchStatus()="+execution2.getBatchStatus()+"<p>");
+				logger.info("execution #2 JobExecution getExitStatus()="+execution2.getExitStatus()+"<p>");
+				logger.info("execution #2 Job instance id="+execution2.getInstanceId()+"<p>");
 				assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, execution2.getBatchStatus());
 				assertWithMessage("Testing execution #2", "COMPLETED", execution2.getExitStatus());
 			}
@@ -1264,11 +1248,11 @@ public class JobOperatorTests {
 			for (JobExecution je : jobExecutions){
 				if (je.getExecutionId() == execution1ID) {
 					assertWithMessage("Dup of execution 1", !seen1);
-					Reporter.log("Seen execution #1 <p>");
+					logger.info("Seen execution #1 <p>");
 					seen1= true;
 				} else if (je.getExecutionId() == execution2ID) {
 					assertWithMessage("Dup of execution 2", !seen2);
-					Reporter.log("Seen execution #2 <p>");
+					logger.info("Seen execution #2 <p>");
 					seen2= true;
 				} 
 			}
@@ -1286,21 +1270,21 @@ public class JobOperatorTests {
 	private void showStepState(StepExecution step) {
 
 
-		Reporter.log("---------------------------");
-		Reporter.log("getStepName(): " + step.getStepName() + " - ");
-		Reporter.log("getJobExecutionId(): " + step.getStepExecutionId() + " - ");
+		logger.info("---------------------------");
+		logger.info("getStepName(): " + step.getStepName() + " - ");
+		logger.info("getJobExecutionId(): " + step.getStepExecutionId() + " - ");
 		//System.out.print("getStepExecutionId(): " + step.getStepExecutionId() + " - ");
 		Metric[] metrics = step.getMetrics();
 
 		for (int i = 0; i < metrics.length; i++) {
-			Reporter.log(metrics[i].getType() + ": " + metrics[i].getValue() + " - ");
+			logger.info(metrics[i].getType() + ": " + metrics[i].getValue() + " - ");
 		}
 
-		Reporter.log("getStartTime(): " + step.getStartTime() + " - ");
-		Reporter.log("getEndTime(): " + step.getEndTime() + " - ");
+		logger.info("getStartTime(): " + step.getStartTime() + " - ");
+		logger.info("getEndTime(): " + step.getEndTime() + " - ");
 		//System.out.print("getLastUpdateTime(): " + step.getLastUpdateTime() + " - ");
-		Reporter.log("getBatchStatus(): " + step.getBatchStatus() + " - ");
-		Reporter.log("getExitStatus(): " + step.getExitStatus());
-		Reporter.log("---------------------------");
+		logger.info("getBatchStatus(): " + step.getBatchStatus() + " - ");
+		logger.info("getExitStatus(): " + step.getExitStatus());
+		logger.info("---------------------------");
 	}
 }

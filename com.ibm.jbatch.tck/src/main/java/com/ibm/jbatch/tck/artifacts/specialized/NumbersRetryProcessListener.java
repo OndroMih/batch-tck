@@ -25,8 +25,6 @@ import javax.batch.api.chunk.listener.RetryProcessListener;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
-
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
 
 @javax.inject.Named("numbersRetryProcessListener")
@@ -39,7 +37,7 @@ public class NumbersRetryProcessListener implements RetryProcessListener {
 
 	    @Override
 	    public void onRetryProcessException(Object o, Exception e) {
-	    	Reporter.log("In onRetryProcessException()" + e + "<p>");
+	    	logger.info("In onRetryProcessException()" + e + "<p>");
 	    	logger.finer("In onRetryProcessException()" + e);
 	    	((Properties)stepCtx.getTransientUserData()).setProperty("retry.process.exception.invoked", "true");
 	        if (e instanceof MyParentException){

@@ -26,7 +26,7 @@ import javax.batch.api.chunk.listener.SkipWriteListener;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
+
 
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
 
@@ -41,7 +41,7 @@ public class NumbersSkipWriteListener implements SkipWriteListener {
 
     @Override
     public void onSkipWriteItem(List w, Exception e) {
-        Reporter.log("In onSkipWriteItem" + e + "<p>");
+        logger.info("In onSkipWriteItem" + e + "<p>");
 
         ((Properties)stepCtx.getTransientUserData()).setProperty("skip.write.item.invoked", "true");
         if (e instanceof MyParentException){

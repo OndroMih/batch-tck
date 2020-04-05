@@ -25,8 +25,6 @@ import javax.batch.runtime.context.JobContext;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
-
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
 
 @javax.inject.Named("mySkipReaderExceedListener")
@@ -49,17 +47,17 @@ public class MySkipReaderExceedListener implements SkipReadListener {
     
     @Override
     public void onSkipReadItem(Exception e) {
-        Reporter.log("In onSkipReadItem" + e + "<p>");
+        logger.info("In onSkipReadItem" + e + "<p>");
         
         count++;
         
         if (e instanceof MyParentException) {
         	if (count == 1){
-        		Reporter.log("SKIPLISTENER: onSkipReadItem, exception is an instance of: MyParentException and number of skips is equal to 1<p>");
+        		logger.info("SKIPLISTENER: onSkipReadItem, exception is an instance of: MyParentException and number of skips is equal to 1<p>");
         		jobCtx.setExitStatus(GOOD_EXIT_STATUS);
         	}
         	else {
-        		Reporter.log("SKIPLISTENER: onSkipReadItem invoked more than expected and/or wrong exception skipped");
+        		logger.info("SKIPLISTENER: onSkipReadItem invoked more than expected and/or wrong exception skipped");
                 jobCtx.setExitStatus(BAD_EXIT_STATUS_INCORRECT_NUMBER_SKIPS);
         	}
         } 

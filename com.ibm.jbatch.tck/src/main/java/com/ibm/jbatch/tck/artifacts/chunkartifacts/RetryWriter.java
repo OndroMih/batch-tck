@@ -33,16 +33,17 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
 
-import org.testng.Reporter;
-
 import com.ibm.jbatch.tck.artifacts.chunktypes.NumbersRecord;
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
+import java.util.logging.Logger;
 
 
 @javax.inject.Named("retryWriter")
 public class RetryWriter extends AbstractItemWriter {
 	
-
+	private static final String CLASSNAME = RetryWriter.class.getName();
+	private final static Logger logger = Logger.getLogger(CLASSNAME);
+    
 	protected DataSource dataSource = null;
 	
     @Inject
@@ -92,18 +93,18 @@ public class RetryWriter extends AbstractItemWriter {
 			item = ((NumbersRecord)record).getItem();
 			quantity = ((NumbersRecord)record).getQuantity();
 			
-			Reporter.log("Writing item: " + item + "...<br>");
+			logger.info("Writing item: " + item + "...<br>");
 			
 			// Throw an exception when forcedFailCount is reached
 			if (forcedFailCount != 0 && count >= forcedFailCount && (testState == STATE_NORMAL)) {
 					    //forcedFailCount = 0;
 						testState = STATE_RETRY;
-						Reporter.log("Fail on purpose in NumbersRecord.writeItems<p>");
+						logger.info("Fail on purpose in NumbersRecord.writeItems<p>");
 						throw new MyParentException("Fail on purpose in NumbersRecord.writeItems()");	
 			} else if (forcedFailCount != 0 && count > forcedFailCount && (testState == STATE_EXCEPTION)) {
 				testState = STATE_SKIP;
 				forcedFailCount = 0;
-				Reporter.log("Test skip -- Fail on purpose NumbersRecord.writeItems<p>");
+				logger.info("Test skip -- Fail on purpose NumbersRecord.writeItems<p>");
 				throw new MyParentException("Test skip -- Fail on purpose in NumbersRecord.writeItems()");
 			}
 			
@@ -111,33 +112,33 @@ public class RetryWriter extends AbstractItemWriter {
 			{
 				
 				if (((Properties)stepCtx.getTransientUserData()).getProperty("retry.write.exception.invoked") != "true") {
-					Reporter.log("onRetryWriteException not invoked<p>");
+					logger.info("onRetryWriteException not invoked<p>");
 					throw new Exception("onRetryWriteException not invoked");
 				} else {
-					Reporter.log("onRetryWriteException was invoked<p>");
+					logger.info("onRetryWriteException was invoked<p>");
 				}
 				
 				if (((Properties)stepCtx.getTransientUserData()).getProperty("retry.write.exception.match") != "true") {
-					Reporter.log("retryable exception does not match");
+					logger.info("retryable exception does not match");
 					throw new Exception("retryable exception does not match");
 				} else {
-					Reporter.log("retryable exception matches");
+					logger.info("retryable exception matches");
 				}
 				
 				testState = STATE_EXCEPTION;
 			} else if(testState == STATE_SKIP) {
 				if (((Properties)stepCtx.getTransientUserData()).getProperty("skip.write.item.invoked") != "true") {
-					Reporter.log("onSkipWriteItem not invoked<p>");
+					logger.info("onSkipWriteItem not invoked<p>");
 					throw new Exception("onSkipWriteItem not invoked");
 				} else {
-					Reporter.log("onSkipWriteItem was invoked<p>");
+					logger.info("onSkipWriteItem was invoked<p>");
 				}
 				
 				if (((Properties)stepCtx.getTransientUserData()).getProperty("skip.write.item.match") != "true") {
-					Reporter.log("skippable exception does not match<p>");
+					logger.info("skippable exception does not match<p>");
 					throw new Exception("skippable exception does not match");
 				} else {
-					Reporter.log("skippable exception matches<p>");
+					logger.info("skippable exception matches<p>");
 				}
 				testState = STATE_NORMAL;
 			}
@@ -151,7 +152,7 @@ public class RetryWriter extends AbstractItemWriter {
 				statement = connection.prepareStatement(RetryConnectionHelper.UPDATE_NUMBERS);
 				statement.setInt(2, item);
 				statement.setInt(1, quantity);
-				Reporter.log("Write [item: " + item + " quantity: " + quantity + "]<p>");
+				logger.info("Write [item: " + item + " quantity: " + quantity + "]<p>");
 				int rs = statement.executeUpdate();
 				count++;
 				

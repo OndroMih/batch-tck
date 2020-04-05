@@ -25,16 +25,17 @@ import javax.batch.api.chunk.ItemProcessor;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
-
 import com.ibm.jbatch.tck.artifacts.chunktypes.NumbersRecord;
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
+import java.util.logging.Logger;
 
 
 @javax.inject.Named("retryProcessor")
 public class RetryProcessor implements ItemProcessor {
 	
-	
+    private static final String CLASSNAME = RetryProcessor.class.getName();
+    private final static Logger logger = Logger.getLogger(CLASSNAME);
+
     @Inject
     StepContext stepCtx;
 	
@@ -65,8 +66,8 @@ public class RetryProcessor implements ItemProcessor {
 	public NumbersRecord processItem(Object record) throws Exception {
 		int item = ((NumbersRecord)record).getItem();
 		int quantity = ((NumbersRecord)record).getQuantity();
-		Reporter.log("Processing item: " + item + "...<br>");
-		Reporter.log("Processing quantity: " + quantity + "...<p>");
+		logger.info("Processing item: " + item + "...<br>");
+		logger.info("Processing quantity: " + quantity + "...<p>");
 		
 		if(!isInited) {
 			forcedFailCount = Integer.parseInt(forcedFailCountProp);
@@ -79,53 +80,53 @@ public class RetryProcessor implements ItemProcessor {
 				   //forcedFailCount = 0;
 					failindex = count;
 					testState = STATE_RETRY;
-					Reporter.log("Fail on purpose in NumbersRecord.processItem<p>");
+					logger.info("Fail on purpose in NumbersRecord.processItem<p>");
 					throw new MyParentException("Fail on purpose in NumbersRecord.processItem()");	
 		} else if (forcedFailCount != 0 && (count >= forcedFailCount) && (testState == STATE_EXCEPTION)) {
 			failindex = count;
 			testState = STATE_SKIP;
 			forcedFailCount = 0;
-			Reporter.log("Test skip -- Fail on purpose NumbersRecord.readItem<p>");
+			logger.info("Test skip -- Fail on purpose NumbersRecord.readItem<p>");
 			throw new MyParentException("Test skip -- Fail on purpose in NumbersRecord.readItem()");	
 		}
 		
 		if (testState == STATE_RETRY)
 		{
 			if (((Properties)stepCtx.getTransientUserData()).getProperty("retry.process.exception.invoked") != "true") {
-				Reporter.log("onRetryProcessException not invoked<p>");
+				logger.info("onRetryProcessException not invoked<p>");
 				throw new Exception("onRetryProcessException not invoked");
 			} else {
-				Reporter.log("onRetryProcessException was invoked<p>");
+				logger.info("onRetryProcessException was invoked<p>");
 			}
 			
 			if (((Properties)stepCtx.getTransientUserData()).getProperty("retry.process.exception.match") != "true") {
-				Reporter.log("retryable exception does not match<p>");
+				logger.info("retryable exception does not match<p>");
 				throw new Exception("retryable exception does not match");
 			} else {
-				Reporter.log("retryable exception matches<p>");
+				logger.info("retryable exception matches<p>");
 			}
 			
 			testState = STATE_EXCEPTION;
 		} else if(testState == STATE_SKIP) {
 			if (((Properties)stepCtx.getTransientUserData()).getProperty("skip.process.item.invoked") != "true") {
-				Reporter.log("onSkipProcessItem not invoked<p>");
+				logger.info("onSkipProcessItem not invoked<p>");
 				throw new Exception("onSkipProcessItem not invoked");
 			} else {
-				Reporter.log("onSkipProcessItem was invoked<p>");
+				logger.info("onSkipProcessItem was invoked<p>");
 			}
 			
 			if (((Properties)stepCtx.getTransientUserData()).getProperty("skip.process.item.match") != "true") {
-				Reporter.log("skippable exception does not match<p>");
+				logger.info("skippable exception does not match<p>");
 				throw new Exception("skippable exception does not match");
 			} else {
-				Reporter.log("skippable exception matches<p>");
+				logger.info("skippable exception matches<p>");
 			}
 			testState = STATE_NORMAL;
 		}
 		
 		
 		quantity = quantity + 1;
-		Reporter.log("Process [item: " + item + " -- new quantity: " + quantity + "]<p>");
+		logger.info("Process [item: " + item + " -- new quantity: " + quantity + "]<p>");
 		count++;
 		
 		return new NumbersRecord(item, quantity);

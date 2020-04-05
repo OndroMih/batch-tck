@@ -29,30 +29,16 @@ import javax.batch.runtime.JobExecution;
 import com.ibm.jbatch.tck.artifacts.specialized.BatchletUsingStepContextImpl;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 
-import org.junit.BeforeClass;
-import org.testng.Reporter;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.*;
 
 public class ExecuteTests {
 
 	private final static Logger logger = Logger.getLogger(ExecuteTests.class.getName());
-	private static JobOperatorBridge jobOp = null;
+	private JobOperatorBridge jobOp = null;
 
 
-	public static void setup(String[] args, Properties props) throws Exception {
-		String METHOD = "setup";
-
-		try {
-			jobOp = new JobOperatorBridge();  
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
-	}
-
-	@BeforeMethod
-	@BeforeClass
-	public static void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		jobOp = new JobOperatorBridge();
 	}
 
@@ -63,8 +49,8 @@ public class ExecuteTests {
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -74,21 +60,21 @@ public class ExecuteTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testMyStepContextBatchlet() throws Exception { 
 
 		String METHOD = "testMyStepContextBatchlet";
 
 		try {
 
-			Reporter.log("Invoke startJobAndWaitForResult<p>");
+			logger.info("Invoke startJobAndWaitForResult<p>");
 
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("test_batchlet_stepCtx"); 
 
-			Reporter.log("EXPECTED JobExecution getExitStatus()="+BatchletUsingStepContextImpl.GOOD_JOB_EXIT_STATUS+"<p>");
-			Reporter.log("ACTUAL JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
-			Reporter.log("EXPECTED JobExecution getBatchStatus()=COMPLETED<p>");
-			Reporter.log("ACTUAL JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getExitStatus()="+BatchletUsingStepContextImpl.GOOD_JOB_EXIT_STATUS+"<p>");
+			logger.info("ACTUAL JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
+			logger.info("EXPECTED JobExecution getBatchStatus()=COMPLETED<p>");
+			logger.info("ACTUAL JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchletUsingStepContextImpl.GOOD_JOB_EXIT_STATUS, jobExec.getExitStatus());
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {

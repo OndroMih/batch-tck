@@ -29,41 +29,25 @@ import javax.batch.runtime.JobExecution;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.testng.Reporter;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.*;
 
 public class ExecutionTests {
 
 	private final static Logger logger = Logger.getLogger(ExecutionTests.class.getName());
 
-	private static JobOperatorBridge jobOp;
+	private JobOperatorBridge jobOp;
 
-	public static void setup(String[] args, Properties props) throws Exception {
-		String METHOD = "setup";
-
-		try {
-			jobOp = new JobOperatorBridge();  
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
-	}
-
-	@BeforeMethod
-	@BeforeClass
-	public static void setUp() throws Exception {
+	@BeforeEach
+	public void setUp() throws Exception {
 		jobOp = new JobOperatorBridge();
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void cleanup() throws Exception {
 	}
 
 	private void begin(String str) {
-		Reporter.log("Begin test method: " + str);
+		logger.info("Begin test method: " + str);
 	}
 
 	/*
@@ -72,18 +56,18 @@ public class ExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testInvokeJobWithOneBatchletStep() throws Exception {
 		String METHOD = "testInvokeJobWithOneBatchletStep";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_1step.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_1step.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_1step");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -96,18 +80,18 @@ public class ExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testInvokeJobWithTwoStepSequenceOfBatchlets() throws Exception {
 		String METHOD = "testInvokeJobWithTwoStepSequenceOfBatchlets";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_2steps.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_2steps.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_2steps");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -120,18 +104,18 @@ public class ExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testInvokeJobWithFourStepSequenceOfBatchlets() throws Exception {
 		String METHOD = "testInvokeJobWithFourStepSequenceOfBatchlets";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_4steps.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_4steps.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_4steps");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -144,18 +128,18 @@ public class ExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testInvokeJobWithNextElement() throws Exception {
 		String METHOD = "testInvokeJobWithNextElement";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_nextElement.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_nextElement.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_nextElement");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -168,19 +152,19 @@ public class ExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testInvokeJobWithFailElement() throws Exception {
 		String METHOD = "testInvokeJobWithFailElement";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_failElement.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_failElement.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_failElement");
 
-			Reporter.log("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals("TEST_FAIL", jobExec.getExitStatus());
 			assertObjEquals(BatchStatus.FAILED, jobExec.getBatchStatus());
 		} catch (Exception e) {
@@ -194,18 +178,18 @@ public class ExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testInvokeJobWithStopElement() throws Exception {
 		String METHOD = "testInvokeJobWithStopElement";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_stopElement.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_stopElement.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_stopElement");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.STOPPED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -218,19 +202,19 @@ public class ExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testInvokeJobWithEndElement() throws Exception {
 		String METHOD = "testInvokeJobWithEndElement";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_endElement.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_endElement.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_endElement");
 
-			Reporter.log("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getExitStatus()="+jobExec.getExitStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals("TEST_ENDED", jobExec.getExitStatus());
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
@@ -244,18 +228,18 @@ public class ExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testInvokeJobSimpleChunk() throws Exception {
 		String METHOD = "testInvokeJobSimpleChunk";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_chunk_simple.xml<p>");
+			logger.info("Locate job XML file: job_chunk_simple.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_chunk_simple");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -267,20 +251,20 @@ public class ExecutionTests {
 	 * @assertion: FIXME
 	 * @test_Strategy: FIXME
 	 */
-	@org.junit.Test
-	@Test(enabled=false) // Disabling per Bug 5379
-	@Ignore("Bug 5379.  Decided to exclude this test.")
+
+	@Test // Disabling per Bug 5379
+	@Disabled("Bug 5379.  Decided to exclude this test.")
 	public void testInvokeJobChunkWithFullAttributes() throws Exception {
 		String METHOD = "testInvokeJobChunkWithFullAttributes";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_chunk_full_attributes.xml<p>");
+			logger.info("Locate job XML file: job_chunk_full_attributes.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_chunk_full_attributes");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -294,18 +278,18 @@ public class ExecutionTests {
 	 * 	and archive loading are unable to find the specified artifact.
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testInvokeJobUsingTCCL() throws Exception {
 		String METHOD = "testInvokeJobUsingTCCL";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Run job using job XML file: test_artifact_load_classloader<p>");
+			logger.info("Run job using job XML file: test_artifact_load_classloader<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("test_artifact_load_classloader");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -318,18 +302,18 @@ public class ExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testCheckpoint() throws Exception {
 		String METHOD = "testCheckpoint";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_chunk_checkpoint.xml<p>");
+			logger.info("Locate job XML file: job_chunk_checkpoint.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_chunk_checkpoint");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -342,18 +326,18 @@ public class ExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testSimpleFlow() throws Exception {
 		String METHOD = "testSimpleFlow";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_flow_batchlet_4steps.xml<p>");
+			logger.info("Locate job XML file: job_flow_batchlet_4steps.xml<p>");
 
-			Reporter.log("Invoking startJobAndWaitForResult for Execution #1<p>");
+			logger.info("Invoking startJobAndWaitForResult for Execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_flow_batchlet_4steps");
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -363,8 +347,8 @@ public class ExecutionTests {
 
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 

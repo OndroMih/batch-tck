@@ -25,16 +25,13 @@ import java.util.Properties;
 import javax.batch.operations.JobExecutionNotMostRecentException;
 import javax.batch.runtime.JobExecution;
 
-import org.junit.Before;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.*;
 
 public class RestartNotMostRecentTests {
-	
+
+	private static final Logger logger = Logger.getLogger(RestartNotMostRecentTests.class.getName());
 	private JobOperatorBridge jobOp = null;
 	
 	/*
@@ -45,32 +42,32 @@ public class RestartNotMostRecentTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testRestartNotMostRecentException() throws Exception {
 		String METHOD = "testRestartNotMostRecentException";
 		
 		try {
-			Reporter.log("starting job");
+			logger.info("starting job");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
+			logger.info("execution.number=1<p>");
 			jobParams.put("execution.number", "1");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_attributes_restart_true_test", jobParams);
 			
 			Properties restartParams = new Properties();
-			Reporter.log("execution.number=2<p>");
+			logger.info("execution.number=2<p>");
 			restartParams.put("execution.number", "2");
 			jobOp.restartJobAndWaitForResult(jobExec.getExecutionId(), restartParams);
 		
 			try {
-				Reporter.log("Trying to execute the first job execution again.");
+				logger.info("Trying to execute the first job execution again.");
 				jobOp.restartJobAndWaitForResult(jobExec.getExecutionId(), restartParams);
 				assertWithMessage("It should have thrown JobExecutionNotMostRecentException", false);
 			} catch(JobExecutionNotMostRecentException e) {
 				assertWithMessage("JobExecutionNotMostRecentException thrown", true);
 			}
 
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
-			Reporter.log("job completed");
+			logger.info("Job Status = " + jobExec.getBatchStatus());
+			logger.info("job completed");
 			
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -79,8 +76,8 @@ public class RestartNotMostRecentTests {
 	
 	
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -101,13 +98,12 @@ public class RestartNotMostRecentTests {
 
 	}
 
-	@BeforeTest
-	@Before
+	@BeforeEach
 	public void beforeTest() throws ClassNotFoundException {
 		jobOp = new JobOperatorBridge(); 
 	}
 
-	@AfterTest
+	@AfterEach
 	public void afterTest() {
 		jobOp = null;
 	}

@@ -26,7 +26,7 @@ import javax.batch.api.chunk.listener.RetryWriteListener;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
+
 
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
 
@@ -40,7 +40,7 @@ public class NumbersRetryWriteListener implements RetryWriteListener {
 
 	    @Override
 	    public void onRetryWriteException(List w, Exception e) {
-	    	Reporter.log("In onRetryWriteException()" + e);
+	    	logger.info("In onRetryWriteException()" + e);
 	    	logger.finer("In onRetryWriteException()" + e);
 	    	((Properties)stepCtx.getTransientUserData()).setProperty("retry.write.exception.invoked", "true");
 	        if (e instanceof MyParentException){

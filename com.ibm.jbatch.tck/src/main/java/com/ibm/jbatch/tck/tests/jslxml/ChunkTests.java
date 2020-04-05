@@ -39,30 +39,17 @@ import com.ibm.jbatch.tck.artifacts.specialized.MySkipReadListener;
 import com.ibm.jbatch.tck.artifacts.specialized.MySkipWriteListener;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 import com.ibm.jbatch.tck.utils.TCKJobExecutionWrapper;
+import java.util.logging.Logger;
 
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.testng.Reporter;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.*;
 
 public class ChunkTests {
 
-    private static JobOperatorBridge jobOp = null;
+    private static final Logger logger = Logger.getLogger(ChunkTests.class.getName());
+    private JobOperatorBridge jobOp = null;
 
-    public static void setup(String[] args, Properties props) throws Exception {
-        String METHOD = "setup";
-
-        try {
-            jobOp = new JobOperatorBridge();
-        } catch (Exception e) {
-            handleException(METHOD, e);
-        }
-    }
-
-    @BeforeMethod
-    @BeforeClass
-    public static void setUp() throws Exception {
+    @BeforeEach
+    public void setUp() throws Exception {
         jobOp = new JobOperatorBridge();
     }
 
@@ -85,27 +72,27 @@ public class ChunkTests {
      *                 job completes successfully. 
      */
     @Test
-    @org.junit.Test
+
     public void testChunkNoProcessorDefined() throws Exception {
         String METHOD = "testChunkDefaultItemCount";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=40<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=40<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("app.checkpoint.position" , "0");
             jobParams.put("readrecord.fail", "40");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkNoProcessorDefined.xml<p>");
+            logger.info("Locate job XML file: chunkNoProcessorDefined.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkNoProcessorDefined", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "buffer size = 10", execution1.getExitStatus());
         } catch (Exception e) {
@@ -128,18 +115,18 @@ public class ChunkTests {
      *                 job completes successfully. 
      */
     @Test
-    @org.junit.Test
+
     public void testChunkNullCheckpointInfo() throws Exception {
         String METHOD = "testChunkDefaultItemCount";
 
         try {
 
-            Reporter.log("Locate job XML file: nullChkPtInfo.xml<p>");
+            logger.info("Locate job XML file: nullChkPtInfo.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("nullChkPtInfo", null);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "checkpointInfo is null in reader.open...checkpointInfo is null in writer.open", execution1.getExitStatus());
         } catch (Exception e) {
@@ -164,18 +151,18 @@ public class ChunkTests {
     *                 the before/after lifecycle of each listener is contained in the  exit status.
     */
    @Test
-   @org.junit.Test
+
    public void testChunkArtifactInstanceUniqueness() throws Exception {
        String METHOD = "testChunkDefaultItemCount";
 
        try {
 
-           Reporter.log("Locate job XML file: uniqueInstanceTest.xml<p>");
+           logger.info("Locate job XML file: uniqueInstanceTest.xml<p>");
 
-           Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+           logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
            JobExecution execution1 = jobOp.startJobAndWaitForResult("uniqueInstanceTest", null);
-           Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-           Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+           logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+           logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
            assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
            assertWithMessage("Testing execution #1", "nullChunkListenerChunkListenerStepListenerStepListenerJobListenerJobListener", execution1.getExitStatus());
        } catch (Exception e) {
@@ -200,30 +187,30 @@ public class ChunkTests {
      * 		during the read-write-process batch loop
      */
     @Test
-    @org.junit.Test
+
     public void testChunkOnErrorListener() throws Exception {
     	
     	String METHOD = "testChunkOnErrorListener";
     	
     	try {
-    		Reporter.log("Create job parameters for execution #1:<p>");
+    		logger.info("Create job parameters for execution #1:<p>");
     		Properties jobParams = new Properties();
     		
-    		Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=5<p>");
-            Reporter.log("app.arraysize=30<p>");
+    		logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=5<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "5");
             jobParams.put("app.writepoints", "0,10");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkListenerTest.xml<p>");
+            logger.info("Locate job XML file: chunkListenerTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkListenerTest", jobParams);
             
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "Chunk onError invoked", execution1.getExitStatus());
           
@@ -246,18 +233,18 @@ public class ChunkTests {
      *                 test that the processing begins at last recorded check point (item 7) prior to previous failure
      */
     @Test
-    @org.junit.Test
+
     public void testChunkRestartItemCount7() throws Exception {
         String METHOD = "testChunkRestartItemCount7";
 
         try {
 
-            Reporter.log("Create job parameters for execution #1:<p>");
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=12<p>");
-            Reporter.log("app.arraysize=30<p>");
-            Reporter.log("app.chunksize=7<p>");
-            Reporter.log("app.commitinterval=10<p>");
+            logger.info("Create job parameters for execution #1:<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=12<p>");
+            logger.info("app.arraysize=30<p>");
+            logger.info("app.chunksize=7<p>");
+            logger.info("app.commitinterval=10<p>");
             Properties jobParams = new Properties();
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "12");
@@ -266,35 +253,35 @@ public class ChunkTests {
             jobParams.put("app.writepoints", "0,7,14,21,28,30");
             jobParams.put("app.next.writepoints", "7,14,21,28,30");
 
-            Reporter.log("Locate job XML file: chunkStopOnEndOn.xml<p>");
+            logger.info("Locate job XML file: chunkStopOnEndOn.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult<p>");
+            logger.info("Invoke startJobAndWaitForResult<p>");
             TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunkStopOnEndOn", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
             long jobInstanceId = execution1.getInstanceId();
             long lastExecutionId = execution1.getExecutionId();
-            Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-            Reporter.log("Got Job execution id: " + lastExecutionId + "<p>");
+            logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+            logger.info("Got Job execution id: " + lastExecutionId + "<p>");
             {
-                Reporter.log("Create job parameters for execution #2:<p>");
-                Reporter.log("execution.number=2<p>");
-                Reporter.log("app.arraysize=30<p>");
-                Reporter.log("app.chunksize=7<p>");
-                Reporter.log("app.commitinterval=10<p>");
+                logger.info("Create job parameters for execution #2:<p>");
+                logger.info("execution.number=2<p>");
+                logger.info("app.arraysize=30<p>");
+                logger.info("app.chunksize=7<p>");
+                logger.info("app.commitinterval=10<p>");
                 Properties restartJobParameters = new Properties();
                 restartJobParameters.put("execution.number", "2");
                 restartJobParameters.put("app.arraysize", "30");
                 jobParams.put("app.checkpoint.position" , "7");
-                Reporter.log("Invoke restartJobAndWaitForResult with executionId: " + lastExecutionId + "<p>");
+                logger.info("Invoke restartJobAndWaitForResult with executionId: " + lastExecutionId + "<p>");
                 TCKJobExecutionWrapper exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParams);
                 lastExecutionId = exec.getExecutionId();
-                Reporter.log("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
-                Reporter.log("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
-                Reporter.log("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
+                logger.info("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
+                logger.info("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
+                logger.info("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
                 assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, exec.getBatchStatus());
                 assertWithMessage("Testing execution #2", "COMPLETED", exec.getExitStatus());
                 assertWithMessage("Testing execution #2", jobInstanceId, exec.getInstanceId());
@@ -318,18 +305,18 @@ public class ChunkTests {
      *                 test that the processing begins at last recorded check point (item 10) prior to previous failure
      */
     @Test
-    @org.junit.Test
+
     public void testChunkRestartItemCount10() throws Exception {
 
         String METHOD = "testChunkRestartItemCount10";
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=12<p>");
-            Reporter.log("app.arraysize=30<p>");
-            Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-            Reporter.log("app.next.writepoints=0,5,10,15,20,25,30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=12<p>");
+            logger.info("app.arraysize=30<p>");
+            logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+            logger.info("app.next.writepoints=0,5,10,15,20,25,30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "12");
             jobParams.put("app.arraysize", "30");
@@ -337,36 +324,36 @@ public class ChunkTests {
             jobParams.put("app.writepoints", "0,10,20,30");
             jobParams.put("app.next.writepoints", "10,20,30");
 
-            Reporter.log("Locate job XML file: chunkrestartCheckpt10.xml<p>");
+            logger.info("Locate job XML file: chunkrestartCheckpt10.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunkrestartCheckpt10", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
             long jobInstanceId = execution1.getInstanceId();
             long lastExecutionId = execution1.getExecutionId();
-            Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-            Reporter.log("Got Job execution id: " + lastExecutionId + "<p>");
+            logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+            logger.info("Got Job execution id: " + lastExecutionId + "<p>");
 
             {
-                Reporter.log("Create job parameters for execution #2:<p>");
+                logger.info("Create job parameters for execution #2:<p>");
                 Properties restartJobParameters = new Properties();
-                Reporter.log("execution.number=2<p>");
-                Reporter.log("app.arraysize=30<p>");
-                Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
+                logger.info("execution.number=2<p>");
+                logger.info("app.arraysize=30<p>");
+                logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
                 restartJobParameters.put("execution.number", "2");
                 jobParams.put("app.arraysize", "30");
                 jobParams.put("app.checkpoint.position" , "10");
                 jobParams.put("app.writepoints", "0,5,10,15,20,25,30");
-                Reporter.log("Invoke restartJobAndWaitForResult with execution id: " + lastExecutionId + "<p>");
+                logger.info("Invoke restartJobAndWaitForResult with execution id: " + lastExecutionId + "<p>");
                 TCKJobExecutionWrapper exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParams);
                 lastExecutionId = exec.getExecutionId();
-                Reporter.log("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
-                Reporter.log("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
-                Reporter.log("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
+                logger.info("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
+                logger.info("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
+                logger.info("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
                 assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, exec.getBatchStatus());
                 assertWithMessage("Testing execution #2", "COMPLETED", exec.getExitStatus());
                 assertWithMessage("Testing execution #2", jobInstanceId, exec.getInstanceId());
@@ -390,18 +377,18 @@ public class ChunkTests {
      *                 test that the processing begins at last recorded check point (item 10) prior to previous failure
      */
     @Test
-    @org.junit.Test
+
     public void testChunkRestartChunk5() throws Exception {
 
         String METHOD = "testChunkRestartChunk5";
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=12<p>");
-            Reporter.log("app.arraysize=30<p>");
-            Reporter.log("app.writepoints=0,3,6,9,12,15,18,21,24,27,30<p>");
-            Reporter.log("app.next.writepoints=9,12,15,18,21,24,27,30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=12<p>");
+            logger.info("app.arraysize=30<p>");
+            logger.info("app.writepoints=0,3,6,9,12,15,18,21,24,27,30<p>");
+            logger.info("app.next.writepoints=9,12,15,18,21,24,27,30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "12");
             jobParams.put("app.arraysize", "30");
@@ -409,34 +396,34 @@ public class ChunkTests {
             jobParams.put("app.writepoints", "0,5,10,15,20,25,30");
             jobParams.put("app.next.writepoints", "10,15,20,25,30");
 
-            Reporter.log("Locate job XML file: chunksize5commitinterval3.xml<p>");
+            logger.info("Locate job XML file: chunksize5commitinterval3.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResul for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResul for execution #1<p>");
             TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunksize5commitinterval3", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
             long jobInstanceId = execution1.getInstanceId();
             long lastExecutionId = execution1.getExecutionId();
-            Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-            Reporter.log("Got Job execution id: " + lastExecutionId + "<p>");
+            logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+            logger.info("Got Job execution id: " + lastExecutionId + "<p>");
             {
-                Reporter.log("Create job parameters for execution #2:<p>");
+                logger.info("Create job parameters for execution #2:<p>");
                 Properties restartJobParameters = new Properties(jobParams);
-                Reporter.log("execution.number=2<p>");
-                Reporter.log("app.arraysize=30<p>");
+                logger.info("execution.number=2<p>");
+                logger.info("app.arraysize=30<p>");
                 
                 restartJobParameters.put("execution.number", "2");
                 restartJobParameters.put("app.checkpoint.position" , "10");
                 restartJobParameters.put("app.arraysize", "30");
-                Reporter.log("Invoke restartJobAndWaitForResult with execution id: " + lastExecutionId + "<p>");
+                logger.info("Invoke restartJobAndWaitForResult with execution id: " + lastExecutionId + "<p>");
                 TCKJobExecutionWrapper exec = jobOp.restartJobAndWaitForResult(lastExecutionId, restartJobParameters);
                 lastExecutionId = exec.getExecutionId();
-                Reporter.log("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
-                Reporter.log("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
-                Reporter.log("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
+                logger.info("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
+                logger.info("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
+                logger.info("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
                 assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, exec.getBatchStatus());
                 assertWithMessage("Testing execution #2", "COMPLETED", exec.getExitStatus());
                 assertWithMessage("Testing execution #2", jobInstanceId, exec.getInstanceId());
@@ -461,27 +448,27 @@ public class ChunkTests {
      *                 job completes successfully. 
      */
     @Test
-    @org.junit.Test
+
     public void testChunkDefaultItemCount() throws Exception {
         String METHOD = "testChunkDefaultItemCount";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=40<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=40<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("app.checkpoint.position" , "0");
             jobParams.put("readrecord.fail", "40");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunksizeDEFAULTcommitIntervalDEFAULT.xml<p>");
+            logger.info("Locate job XML file: chunksizeDEFAULTcommitIntervalDEFAULT.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunksizeDEFAULTcommitIntervalDEFAULT", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "buffer size = 10", execution1.getExitStatus());
         } catch (Exception e) {
@@ -507,18 +494,18 @@ public class ChunkTests {
      *                  test that the job completes successfully.
      */
     @Test
-    @org.junit.Test
+
     public void testChunkRestartCustomCheckpoint() throws Exception {
         String METHOD = "testChunkRestartCustomCheckpoint";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=2<p>");
-            Reporter.log("readrecord.fail=12<p>");
-            Reporter.log("app.arraysize=30<p>");
-            Reporter.log("app.writepoints=0,4,9,13,15,20,22,27,30<p>");
-            Reporter.log("app.next.writepoints=9,13,15,20,22,27,30<p>");
+            logger.info("execution.number=2<p>");
+            logger.info("readrecord.fail=12<p>");
+            logger.info("app.arraysize=30<p>");
+            logger.info("app.writepoints=0,4,9,13,15,20,22,27,30<p>");
+            logger.info("app.next.writepoints=9,13,15,20,22,27,30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "12");
             jobParams.put("app.checkpoint.position" , "0");
@@ -526,35 +513,35 @@ public class ChunkTests {
             jobParams.put("app.writepoints", "0,4,9,13,15,20,22,27,30");
             jobParams.put("app.next.writepoints", "9,13,15,20,22,27,30");
 
-            Reporter.log("Locate job XML file: chunkCustomCheckpoint.xml<p>");
+            logger.info("Locate job XML file: chunkCustomCheckpoint.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunkCustomCheckpoint", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
 
             long jobInstanceId = execution1.getInstanceId();
             long lastExecutionId = execution1.getExecutionId();
-            Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-            Reporter.log("Got Job execution id: " + lastExecutionId + "<p>");
+            logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+            logger.info("Got Job execution id: " + lastExecutionId + "<p>");
             {
-                Reporter.log("Create job parameters for execution #2:<p>");
+                logger.info("Create job parameters for execution #2:<p>");
                 Properties restartJobParameters = new Properties(jobParams);
-                Reporter.log("execution.number=2<p>");
-                Reporter.log("app.arraysize=30<p>");
-                Reporter.log("app.writepoints=9,13,15,20,22,27,30<p>");
+                logger.info("execution.number=2<p>");
+                logger.info("app.arraysize=30<p>");
+                logger.info("app.writepoints=9,13,15,20,22,27,30<p>");
                 restartJobParameters.put("execution.number", "2");
                 restartJobParameters.put("app.checkpoint.position" , "9");
                 restartJobParameters.put("app.arraysize", "30");
                 restartJobParameters.put("app.writepoints", "9,13,15,20,22,27,30");
-                Reporter.log("Invoke restartJobAndWaitForResult with execution id: " + lastExecutionId + "<p>");
+                logger.info("Invoke restartJobAndWaitForResult with execution id: " + lastExecutionId + "<p>");
                 TCKJobExecutionWrapper exec = jobOp.restartJobAndWaitForResult(lastExecutionId, restartJobParameters);
                 lastExecutionId = exec.getExecutionId();
-                Reporter.log("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
-                Reporter.log("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
-                Reporter.log("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
+                logger.info("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
+                logger.info("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
+                logger.info("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
                 assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, exec.getBatchStatus());
                 assertWithMessage("Testing execution #2", "COMPLETED", exec.getExitStatus());
                 assertWithMessage("Testing execution #2", jobInstanceId, exec.getInstanceId());
@@ -579,29 +566,29 @@ public class ChunkTests {
      *                  test that the job completes successfully.     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkTimeBasedDefaultCheckpoint() throws Exception {
         String METHOD = "testChunkTimeBasedDefaultCheckpoint";
         
         String DEFAULT_SLEEP_TIME = "500";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=31<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=31<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "31");
             jobParams.put("app.arraysize", "30");
             jobParams.put("app.sleeptime", System.getProperty("ChunkTests.testChunkTimeBasedDefaultCheckpoint.sleep",DEFAULT_SLEEP_TIME));
 
-            Reporter.log("Locate job XML file: chunkTimeBasedDefaultCheckpoint.xml<p>");
+            logger.info("Locate job XML file: chunkTimeBasedDefaultCheckpoint.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkTimeBasedDefaultCheckpoint", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             String exitStatus = execution1.getExitStatus();
 	        assertWithMessage("Testing execution #1", (exitStatus.equals("TRUE: 0") || exitStatus.equals("TRUE: 1")));
@@ -624,30 +611,30 @@ public class ChunkTests {
      *                  test that the job completes successfully.     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkTimeBasedTimeLimit0() throws Exception {
         String METHOD = "testChunkTimeBasedDefaultCheckpoint";
         
         String DEFAULT_SLEEP_TIME = "500";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=31<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=31<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "31");
             jobParams.put("app.arraysize", "30");
             
             jobParams.put("app.sleeptime", System.getProperty("ChunkTests.testChunkTimeBasedTimeLimit0.sleep",DEFAULT_SLEEP_TIME));
 
-            Reporter.log("Locate job XML file: chunkTimeLimit0.xml<p>");
+            logger.info("Locate job XML file: chunkTimeLimit0.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkTimeLimit0", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             String exitStatus = execution1.getExitStatus();
 	        assertWithMessage("Testing execution #1", (exitStatus.equals("TRUE: 0") || exitStatus.equals("TRUE: 1")));
@@ -673,7 +660,7 @@ public class ChunkTests {
      *                  test that the job completes successfully.     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkTimeBased10Seconds() throws Exception {
     	
     	 String METHOD = "testChunkTimeBased10Seconds";
@@ -693,7 +680,7 @@ public class ChunkTests {
 	        String exitStatus = execution1.getExitStatus();
 	        assertWithMessage("Testing execution #1", (exitStatus.equals("TRUE: 9") || exitStatus.equals("TRUE: 10") || exitStatus.equals("TRUE: 11")));
 	
-	        Reporter.log("exit status = " + execution1.getExitStatus() + "<p>");
+	        logger.info("exit status = " + execution1.getExitStatus() + "<p>");
     	 } catch (Exception e) {
              handleException(METHOD, e);
          }
@@ -716,18 +703,18 @@ public class ChunkTests {
      *                  test that the job completes successfully.     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkRestartTimeBasedCheckpoint() throws Exception {
         String METHOD = "testChunkRestartTimeBasedCheckpoint";
         
         String DEFAULT_SLEEP_TIME = "500";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=12<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=12<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "12");
             jobParams.put("app.arraysize", "30");
@@ -735,25 +722,25 @@ public class ChunkTests {
 
 
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunkTimeBasedCheckpoint", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "FALSE: 0", execution1.getExitStatus());
 
             long jobInstanceId = execution1.getInstanceId();
             long lastExecutionId = execution1.getExecutionId();
-            Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-            Reporter.log("Got Job execution id: " + lastExecutionId + "<p>");
+            logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+            logger.info("Got Job execution id: " + lastExecutionId + "<p>");
 
             {
-                Reporter.log("Invoke restartJobAndWaitForResult with execution id: " + lastExecutionId + "<p>");
+                logger.info("Invoke restartJobAndWaitForResult with execution id: " + lastExecutionId + "<p>");
                 TCKJobExecutionWrapper exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParams);
                 lastExecutionId = exec.getExecutionId();
-                Reporter.log("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
-                Reporter.log("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
-                Reporter.log("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
+                logger.info("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
+                logger.info("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
+                logger.info("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
                 assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, exec.getBatchStatus());
                 String exitStatus = exec.getExitStatus();
     	        assertWithMessage("Testing execution #2", (exitStatus.equals("TRUE: 9") || exitStatus.equals("TRUE: 10") || exitStatus.equals("TRUE: 11")));
@@ -783,7 +770,7 @@ public class ChunkTests {
      *                  test that the job completes successfully.     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkRestartTimeBasedDefaultCheckpoint() throws Exception {
 
         String METHOD = "testChunkRestartTimeBasedDefaultCheckpoint";
@@ -791,22 +778,22 @@ public class ChunkTests {
         String DEFAULT_SLEEP_TIME = "500";
         
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=2<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=2<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "2");
             jobParams.put("app.arraysize", "30");
             jobParams.put("app.sleeptime", System.getProperty("ChunkTests.testChunkRestartTimeBasedDefaultCheckpoint.sleep",DEFAULT_SLEEP_TIME));
 
-            Reporter.log("Locate job XML file: chunkTimeBasedDefaultCheckpoint.xml<p>");
+            logger.info("Locate job XML file: chunkTimeBasedDefaultCheckpoint.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunkTimeBasedDefaultCheckpoint", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "TRUE: 0", execution1.getExitStatus());
 
@@ -814,16 +801,16 @@ public class ChunkTests {
             JobInstance jobInstance = jobOp.getJobInstance(execution1.getExecutionId());
             jobInstanceId = jobInstance.getInstanceId();
             long lastExecutionId = execution1.getExecutionId();
-            Reporter.log("Got Job instance id: " + jobInstanceId + "<p>");
-            Reporter.log("Got Job execution id: " + lastExecutionId + "<p>");
+            logger.info("Got Job instance id: " + jobInstanceId + "<p>");
+            logger.info("Got Job execution id: " + lastExecutionId + "<p>");
             {
 
-                Reporter.log("Invoke restartJobAndWaitForResult with execution id: " + lastExecutionId + "<p>");
+                logger.info("Invoke restartJobAndWaitForResult with execution id: " + lastExecutionId + "<p>");
                 TCKJobExecutionWrapper exec = jobOp.restartJobAndWaitForResult(lastExecutionId, jobParams);
                 lastExecutionId = exec.getExecutionId();
-                Reporter.log("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
-                Reporter.log("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
-                Reporter.log("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
+                logger.info("execution #2 JobExecution getBatchStatus()=" + exec.getBatchStatus() + "<p>");
+                logger.info("execution #2 JobExecution getExitStatus()=" + exec.getExitStatus() + "<p>");
+                logger.info("execution #2 Job instance id=" + exec.getInstanceId() + "<p>");
                 assertWithMessage("Testing execution #2", BatchStatus.COMPLETED, exec.getBatchStatus());
                 assertWithMessage("Testing execution #2", "TRUE: 0", exec.getExitStatus());
                 assertWithMessage("Testing execution #2", jobInstanceId, exec.getInstanceId());
@@ -853,28 +840,28 @@ public class ChunkTests {
      *                  test that the job completes fails and that the application recognized the skippable exception 
      *                  that extends the unskippable is not treated as skippable.     
      */
-    @org.junit.Test
-	@Test(enabled=false) // Disabling per Bug 5403
-	@Ignore("Bug 5403.  Decided to exclude this test. Hopefully will introduce a modified version in 1.1")
+
+	@Test // Disabling per Bug 5403
+	@Disabled("Bug 5403.  Decided to exclude this test. Hopefully will introduce a modified version in 1.1")
     public void testChunkSkipMultipleExceptions() throws Exception {
 
         String METHOD = "testChunkSkipRead";
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=1,3<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=1,3<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "1,3");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipMultipleExceptions.xml<p>");
+            logger.info("Locate job XML file: chunkSkipMultipleExceptions.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkSkipMultipleExceptions", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", MySkipReadListener.GOOD_EXIT_STATUS, execution1.getExitStatus());
         } catch (Exception e) {
@@ -899,26 +886,26 @@ public class ChunkTests {
      *                  test that the job completes successfully and that the application recognized the exceptions as skippable     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkSkipRead() throws Exception {
 
         String METHOD = "testChunkSkipRead";
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=1,3<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=1,3<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "1,3");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipInitialTest.xml<p>");
+            logger.info("Locate job XML file: chunkSkipInitialTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkSkipInitialTest", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", MySkipReadListener.GOOD_EXIT_STATUS, execution1.getExitStatus());
         } catch (Exception e) {
@@ -944,25 +931,25 @@ public class ChunkTests {
      *                  and that the item was passed to the skip listener.     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkSkipProcess() throws Exception {
         String METHOD = "testChunkSkipProcess";
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("processrecord.fail=7,13<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("processrecord.fail=7,13<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("processrecord.fail", "7,13");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipInitialTest.xml<p>");
+            logger.info("Locate job XML file: chunkSkipInitialTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkSkipInitialTest", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", MySkipProcessListener.GOOD_EXIT_STATUS, execution1.getExitStatus());
         } catch (Exception e) {
@@ -987,26 +974,26 @@ public class ChunkTests {
      *                  and that the item was passed to the skip listener.
      */
     @Test
-    @org.junit.Test
+
     public void testChunkSkipWrite() throws Exception {
         String METHOD = "testChunkSkipWrite";
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("writerecord.fail=1,3<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("writerecord.fail=1,3<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("writerecord.fail", "1,3");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipInitialTest.xml<p>");
+            logger.info("Locate job XML file: chunkSkipInitialTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkSkipInitialTest", jobParams);
 
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", MySkipWriteListener.GOOD_EXIT_STATUS, execution1.getExitStatus());
         } catch (Exception e) {
@@ -1031,63 +1018,63 @@ public class ChunkTests {
      *                  test that the job completes successfully and that the application recognized the exceptions as skippable     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkSkipOnError() throws Exception {
 
         String METHOD = "testChunkSkipOnError";
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=1,3<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=1,3<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "1,3");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipOnErrorTest.xml<p>");
+            logger.info("Locate job XML file: chunkSkipOnErrorTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkSkipOnErrorTest", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "MyItemReadListenerImpl.onReadError", execution1.getExitStatus());
             
             //process skip
             jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("processrecord.fail=7,13<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("processrecord.fail=7,13<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("processrecord.fail", "7,13");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipOnErrorTest.xml<p>");
+            logger.info("Locate job XML file: chunkSkipOnErrorTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution2 = jobOp.startJobAndWaitForResult("chunkSkipOnErrorTest", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution2.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution2.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution2.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution2.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution2.getBatchStatus());
             assertWithMessage("Testing execution #1", "MyItemProcessListenerImpl.onProcessError", execution2.getExitStatus());
             
             //write skip
             jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("writerecord.fail=1,3<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("writerecord.fail=1,3<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("writerecord.fail", "1,3");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipOnErrorTest.xml<p>");
+            logger.info("Locate job XML file: chunkSkipOnErrorTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution3 = jobOp.startJobAndWaitForResult("chunkSkipOnErrorTest", jobParams);
 
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution3.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution3.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution3.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution3.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution3.getBatchStatus());
             assertWithMessage("Testing execution #1", "MyItemWriteListenerImpl.onWriteError", execution3.getExitStatus());
             
@@ -1113,63 +1100,63 @@ public class ChunkTests {
      *                  test that the job completes successfully and that the listener's onError method is called by the runtime.    
      */
     @Test
-    @org.junit.Test
+
     public void testChunkRetryOnError() throws Exception {
 
         String METHOD = "testChunkRetryOnError";
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=1,3<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=1,3<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "1,3");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkRetryOnError.xml<p>");
+            logger.info("Locate job XML file: chunkRetryOnError.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkRetryOnError", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "MyItemReadListenerImpl.onReadError", execution1.getExitStatus());
             
             //process skip
             jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("processrecord.fail=7,13<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("processrecord.fail=7,13<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("processrecord.fail", "7,13");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkRetryOnError.xml<p>");
+            logger.info("Locate job XML file: chunkRetryOnError.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution2 = jobOp.startJobAndWaitForResult("chunkRetryOnError", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution2.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution2.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution2.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution2.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution2.getBatchStatus());
             assertWithMessage("Testing execution #1", "MyItemProcessListenerImpl.onProcessError", execution2.getExitStatus());
             
             //write skip
             jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("writerecord.fail=1,3<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("writerecord.fail=1,3<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("writerecord.fail", "1,3");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkRetryOnError.xml<p>");
+            logger.info("Locate job XML file: chunkRetryOnError.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution3 = jobOp.startJobAndWaitForResult("chunkRetryOnError", jobParams);
 
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution3.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution3.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution3.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution3.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution3.getBatchStatus());
             assertWithMessage("Testing execution #1", "MyItemWriteListenerImpl.onWriteError", execution3.getExitStatus());
             
@@ -1195,27 +1182,27 @@ public class ChunkTests {
      *                  test that the job fails but the skip-limit was recognized.     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkSkipReadExceedSkip() throws Exception {
         String METHOD = "testChunkSkipReadExceedSkip";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("processrecord.fail=1,2<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("processrecord.fail=1,2<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "1,2");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipExceededTest.xml<p>");
+            logger.info("Locate job XML file: chunkSkipExceededTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkSkipExceededTest", jobParams);
 
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", MySkipReadListener.GOOD_EXIT_STATUS, execution1.getExitStatus());
         } catch (Exception e) {
@@ -1240,28 +1227,28 @@ public class ChunkTests {
      *                  test that the job fails but the skip-limit was recognized.     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkSkipProcessExceedSkip() throws Exception {
 
         String METHOD = "testChunkSkipProcessExceedSkip";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("processrecord.fail=5,7<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("processrecord.fail=5,7<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("processrecord.fail", "5,7");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipExceededTest.xml<p>");
+            logger.info("Locate job XML file: chunkSkipExceededTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkSkipExceededTest", jobParams);
 
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", MySkipProcessListener.GOOD_EXIT_STATUS, execution1.getExitStatus());
         } catch (Exception e) {
@@ -1286,27 +1273,27 @@ public class ChunkTests {
      *                  test that the job fails but the skip-limit was recognized.     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkSkipWriteExceedSkip() throws Exception {
         String METHOD = "testChunkSkipWriteExceedSkip";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("writerecord.fail=2,8<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("writerecord.fail=2,8<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("writerecord.fail", "2,8");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipExceededTest.xml<p>");
+            logger.info("Locate job XML file: chunkSkipExceededTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkSkipExceededTest", jobParams);
 
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", MySkipWriteListener.GOOD_EXIT_STATUS, execution1.getExitStatus());
         } catch (Exception e) {
@@ -1332,27 +1319,27 @@ public class ChunkTests {
      *                  test that the job fails but the final exception was non skippable was recognized.     
      */
     @Test
-    @org.junit.Test
+
     public void testChunkSkipReadNoSkipChildEx() throws Exception {
         String METHOD = "testChunkSkipReadNoSkipChildEx";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("writerecord.fail=1,2,3<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("writerecord.fail=1,2,3<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "1,2,3");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkSkipNoSkipChildExTest.xml<p>");
+            logger.info("Locate job XML file: chunkSkipNoSkipChildExTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkSkipNoSkipChildExTest", jobParams);
 
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", MySkipReadListener.GOOD_EXIT_STATUS, execution1.getExitStatus());
         } catch (Exception e) {
@@ -1377,27 +1364,27 @@ public class ChunkTests {
      *                  test that the job succeeds.    
      */
     @Test
-    @org.junit.Test
+
     public void testChunkRetryRead() throws Exception {
         String METHOD = "testChunkRetryRead";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("writerecord.fail=8,13,22<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("writerecord.fail=8,13,22<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "8,13,22");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkRetryInitialTest.xml<p>");
+            logger.info("Locate job XML file: chunkRetryInitialTest.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkRetryInitialTest", jobParams);
 
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.COMPLETED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "COMPLETED", execution1.getExitStatus());
         } catch (Exception e) {
@@ -1422,28 +1409,28 @@ public class ChunkTests {
      *                  as unretryable itself.
      *                  test that the job completes fails and that the application recognized the retryable exception that extends the unretryable is not treated as retryable.  
      */
-    @org.junit.Test
-	@Test(enabled=false) // Disabling per Bug 5403
-	@Ignore("Bug 5403.  Decided to exclude this test. Hopefully will introduce a modified version in 1.1")
+
+	@Test // Disabling per Bug 5403
+	@Disabled("Bug 5403.  Decided to exclude this test. Hopefully will introduce a modified version in 1.1")
     public void testChunkRetryMultipleExceptions() throws Exception {
 
         String METHOD = "testChunkRetryMultipleExceptions";
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=1,3<p>");
-            Reporter.log("app.arraysize=30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=1,3<p>");
+            logger.info("app.arraysize=30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "1,3,5");
             jobParams.put("app.arraysize", "30");
 
-            Reporter.log("Locate job XML file: chunkRetryMultipleExceptions.xml<p>");
+            logger.info("Locate job XML file: chunkRetryMultipleExceptions.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("chunkRetryMultipleExceptions", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", MyMultipleExceptionsRetryReadListener.GOOD_EXIT_STATUS, execution1.getExitStatus());
         } catch (Exception e) {
@@ -1472,73 +1459,73 @@ public class ChunkTests {
      *                  test that each job succeeds and that the appropriate listener was called.    
      */
     @Test
-    @org.junit.Test
+
     public void testChunkItemListeners() throws Exception {
         String METHOD = "testChunkItemListeners";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=31<p>");
-            Reporter.log("app.arraysize=30<p>");
-            Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-            Reporter.log("app.listenertest=READ<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=31<p>");
+            logger.info("app.arraysize=30<p>");
+            logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+            logger.info("app.listenertest=READ<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "31");
             jobParams.put("app.arraysize", "30");
             jobParams.put("app.writepoints", "0,5,10,15,20,25,30");
             jobParams.put("app.listenertest", "READ");
 
-            Reporter.log("Locate job XML file: testListeners.xml<p>");
+            logger.info("Locate job XML file: testListeners.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("testListeners", jobParams);
 
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1 for the READ LISTENER", BatchStatus.COMPLETED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1 for the READ LISTENER", MyItemReadListenerImpl.GOOD_EXIT_STATUS,
                     execution1.getExitStatus());
 
-            Reporter.log("Create job parameters for execution #2:<p>");
+            logger.info("Create job parameters for execution #2:<p>");
             jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=31<p>");
-            Reporter.log("app.arraysize=30<p>");
-            Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-            Reporter.log("app.listenertest=PROCESS<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=31<p>");
+            logger.info("app.arraysize=30<p>");
+            logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+            logger.info("app.listenertest=PROCESS<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "31");
             jobParams.put("app.arraysize", "30");
             jobParams.put("app.writepoints", "0,5,10,15,20,25,30");
             jobParams.put("app.listenertest", "PROCESS");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #2<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #2<p>");
             JobExecution execution2 = jobOp.startJobAndWaitForResult("testListeners", jobParams);
-            Reporter.log("execution #2 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #2 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #2 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #2 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #2 for the PROCESS LISTENER", BatchStatus.COMPLETED, execution2.getBatchStatus());
             assertWithMessage("Testing execution #2 for the PROCESS LISTENER", MyItemProcessListenerImpl.GOOD_EXIT_STATUS,
                     execution2.getExitStatus());
 
-            Reporter.log("Create job parameters for execution #3:<p>");
+            logger.info("Create job parameters for execution #3:<p>");
             jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=31<p>");
-            Reporter.log("app.arraysize=30<p>");
-            Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-            Reporter.log("app.listenertest=WRITE<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=31<p>");
+            logger.info("app.arraysize=30<p>");
+            logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+            logger.info("app.listenertest=WRITE<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "31");
             jobParams.put("app.arraysize", "30");
             jobParams.put("app.writepoints", "0,5,10,15,20,25,30");
             jobParams.put("app.listenertest", "WRITE");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #3<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #3<p>");
             JobExecution execution3 = jobOp.startJobAndWaitForResult("testListeners", jobParams);
-            Reporter.log("execution #3 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #3 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #3 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #3 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #3 for the WRITE LISTENER", BatchStatus.COMPLETED, execution3.getBatchStatus());
             assertWithMessage("Testing execution #3 for the WRITE LISTENER", MyItemWriteListenerImpl.GOOD_EXIT_STATUS,
                     execution3.getExitStatus());
@@ -1567,55 +1554,55 @@ public class ChunkTests {
      *                  The Batch Artifact enforces that each listener (read, process and write) onError() methods are been called correctly by the runtime.    
      */
     @Test
-    @org.junit.Test
+
     public void testChunkItemListenersOnError() throws Exception {
         String METHOD = "testChunkItemListeners";
 
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
             
-            Reporter.log("read.fail.immediate=true<p>");
+            logger.info("read.fail.immediate=true<p>");
         
             jobParams.put("read.fail.immediate", "true");
 
-            Reporter.log("Locate job XML file: testListeners.xml<p>");
+            logger.info("Locate job XML file: testListeners.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             JobExecution execution1 = jobOp.startJobAndWaitForResult("testListenersOnError", jobParams);
 
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1 for the READ LISTENER", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1 for the READ LISTENER", "MyItemReadListenerImpl.onReadError",
                     execution1.getExitStatus());
 
-            Reporter.log("Create job parameters for execution #2:<p>");
+            logger.info("Create job parameters for execution #2:<p>");
             jobParams = new Properties();
-            Reporter.log("process.fail.immediate=true<p>");
+            logger.info("process.fail.immediate=true<p>");
             
             jobParams.put("process.fail.immediate", "true");
 
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #2<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #2<p>");
             JobExecution execution2 = jobOp.startJobAndWaitForResult("testListenersOnError", jobParams);
-            Reporter.log("execution #2 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #2 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #2 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #2 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #2 for the PROCESS LISTENER", BatchStatus.FAILED, execution2.getBatchStatus());
             assertWithMessage("Testing execution #2 for the PROCESS LISTENER", "MyItemProcessListenerImpl.onProcessError",
                     execution2.getExitStatus());
 
-            Reporter.log("Create job parameters for execution #3:<p>");
+            logger.info("Create job parameters for execution #3:<p>");
             jobParams = new Properties();
-            Reporter.log("write.fail.immediate=true<p>");
+            logger.info("write.fail.immediate=true<p>");
             
             jobParams.put("write.fail.immediate", "true");
 
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #3<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #3<p>");
             JobExecution execution3 = jobOp.startJobAndWaitForResult("testListenersOnError", jobParams);
-            Reporter.log("execution #3 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #3 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #3 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #3 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #3 for the WRITE LISTENER", BatchStatus.FAILED, execution3.getBatchStatus());
             assertWithMessage("Testing execution #3 for the WRITE LISTENER", "MyItemWriteListenerImpl.onWriteError",
                     execution3.getExitStatus());
@@ -1634,18 +1621,18 @@ public class ChunkTests {
      *                 Verify that persisted step data is available even if step did not complete.
      */
     @Test
-    @org.junit.Test
+
     public void testUserDataIsPersistedAfterCheckpoint() throws Exception {
 
         String METHOD = "testChunkRestartItemCount10";
         try {
-            Reporter.log("Create job parameters for execution #1:<p>");
+            logger.info("Create job parameters for execution #1:<p>");
             Properties jobParams = new Properties();
-            Reporter.log("execution.number=1<p>");
-            Reporter.log("readrecord.fail=12<p>");
-            Reporter.log("app.arraysize=30<p>");
-            Reporter.log("app.writepoints=0,5,10,15,20,25,30<p>");
-            Reporter.log("app.next.writepoints=0,5,10,15,20,25,30<p>");
+            logger.info("execution.number=1<p>");
+            logger.info("readrecord.fail=12<p>");
+            logger.info("app.arraysize=30<p>");
+            logger.info("app.writepoints=0,5,10,15,20,25,30<p>");
+            logger.info("app.next.writepoints=0,5,10,15,20,25,30<p>");
             jobParams.put("execution.number", "1");
             jobParams.put("readrecord.fail", "12");
             jobParams.put("app.arraysize", "30");
@@ -1653,12 +1640,12 @@ public class ChunkTests {
             jobParams.put("app.writepoints", "0,10,20,30");
             jobParams.put("app.next.writepoints", "10,20,30");
 
-            Reporter.log("Locate job XML file: chunkrestartCheckpt10.xml<p>");
+            logger.info("Locate job XML file: chunkrestartCheckpt10.xml<p>");
 
-            Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+            logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
             TCKJobExecutionWrapper execution1 = jobOp.startJobAndWaitForResult("chunkrestartCheckpt10", jobParams);
-            Reporter.log("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
-            Reporter.log("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
+            logger.info("execution #1 JobExecution getBatchStatus()=" + execution1.getBatchStatus() + "<p>");
+            logger.info("execution #1 JobExecution getExitStatus()=" + execution1.getExitStatus() + "<p>");
             assertWithMessage("Testing execution #1", BatchStatus.FAILED, execution1.getBatchStatus());
             assertWithMessage("Testing execution #1", "FAILED", execution1.getExitStatus());
             
@@ -1683,25 +1670,25 @@ public class ChunkTests {
     
     private void showStepState(StepExecution step) {
 
-        Reporter.log("---------------------------<p>");
-        Reporter.log("getJobExecutionId(): " + step.getStepExecutionId() + " - ");
+        logger.info("---------------------------<p>");
+        logger.info("getJobExecutionId(): " + step.getStepExecutionId() + " - ");
 
         Metric[] metrics = step.getMetrics();
 
         for (int i = 0; i < metrics.length; i++) {
-            Reporter.log(metrics[i].getType() + ": " + metrics[i].getValue() + " - ");
+            logger.info(metrics[i].getType() + ": " + metrics[i].getValue() + " - ");
         }
 
-        Reporter.log("getStartTime(): " + step.getStartTime() + " - ");
-        Reporter.log("getEndTime(): " + step.getEndTime() + " - ");
-        Reporter.log("getBatchStatus(): " + step.getBatchStatus() + " - ");
-        Reporter.log("getExitStatus(): " + step.getExitStatus());
-        Reporter.log("---------------------------<p>");
+        logger.info("getStartTime(): " + step.getStartTime() + " - ");
+        logger.info("getEndTime(): " + step.getEndTime() + " - ");
+        logger.info("getBatchStatus(): " + step.getBatchStatus() + " - ");
+        logger.info("getExitStatus(): " + step.getExitStatus());
+        logger.info("---------------------------<p>");
     }
 
     private static void handleException(String methodName, Exception e) throws Exception {
-        Reporter.log("Caught exception: " + e.getMessage() + "<p>");
-        Reporter.log(methodName + " failed<p>");
+        logger.info("Caught exception: " + e.getMessage() + "<p>");
+        logger.info(methodName + " failed<p>");
         throw e;
     }
 

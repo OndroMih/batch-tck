@@ -32,15 +32,13 @@ import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
 
-import org.junit.Before;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.*;
 
 public class JobAttributeRestartTests {
 
+	private static final Logger logger = Logger.getLogger(JobAttributeRestartTests.class.getName());
 	private JobOperatorBridge jobOp = null;
 
 	private long TIMEOUT = 5000L;
@@ -59,30 +57,30 @@ public class JobAttributeRestartTests {
 	 * @throws NoSuchJobExecutionException 
 	 * @throws JobInstanceAlreadyCompleteException 
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testJobAttributeRestartableTrue() throws Exception {
 
 		String METHOD = "testJobAttributeRestartableTrue";
 
 		try {
-			Reporter.log("starting job");
+			logger.info("starting job");
 			Properties jobParams = new Properties();
-			Reporter.log("execution.number=1<p>");
+			logger.info("execution.number=1<p>");
 			jobParams.put("execution.number", "1");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_attributes_restart_true_test", jobParams);
 
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 			assertWithMessage("Job failed ", BatchStatus.FAILED, jobExec.getBatchStatus());
 
-			Reporter.log("restarting job");
+			logger.info("restarting job");
 			Properties restartParams = new Properties();
-			Reporter.log("execution.number=2<p>");
+			logger.info("execution.number=2<p>");
 			restartParams.put("execution.number", "2");
 			JobExecution newJobExec = jobOp.restartJobAndWaitForResult(jobExec.getExecutionId(), restartParams);
 
-			Reporter.log("Job Status = " + newJobExec.getBatchStatus());
+			logger.info("Job Status = " + newJobExec.getBatchStatus());
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, newJobExec.getBatchStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
@@ -91,8 +89,8 @@ public class JobAttributeRestartTests {
 
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -113,13 +111,12 @@ public class JobAttributeRestartTests {
 
 	}
 
-	@BeforeTest
-	@Before
+	@BeforeEach
 	public void beforeTest() throws ClassNotFoundException {
 		jobOp = new JobOperatorBridge(); 
 	}
 
-	@AfterTest
+	@AfterEach
 	public void afterTest() {
 		jobOp = null;
 	}

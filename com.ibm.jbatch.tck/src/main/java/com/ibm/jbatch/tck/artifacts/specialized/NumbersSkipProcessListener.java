@@ -25,7 +25,7 @@ import javax.batch.api.chunk.listener.SkipProcessListener;
 import javax.batch.runtime.context.StepContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
+
 
 import com.ibm.jbatch.tck.artifacts.reusable.MyParentException;
 
@@ -40,7 +40,7 @@ public class NumbersSkipProcessListener implements SkipProcessListener {
 
     @Override
     public void onSkipProcessItem(Object o, Exception e) {
-        Reporter.log("In onSkipProcessItem" + e + "<p>");
+        logger.info("In onSkipProcessItem" + e + "<p>");
 
         ((Properties)stepCtx.getTransientUserData()).setProperty("skip.process.item.invoked", "true");
         if (e instanceof MyParentException){

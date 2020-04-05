@@ -24,9 +24,6 @@ import javax.batch.api.chunk.listener.RetryProcessListener;
 import javax.batch.runtime.context.JobContext;
 import javax.inject.Inject;
 
-import org.testng.Reporter;
-
-
 @javax.inject.Named("myRetryProcessListener")
 public class MyRetryProcessListener implements RetryProcessListener {
 	 private final static String sourceClass = MyRetryProcessListener.class.getName();
@@ -37,7 +34,7 @@ public class MyRetryProcessListener implements RetryProcessListener {
 
 	    @Override
 	    public void onRetryProcessException(Object o, Exception e) {
-	    	Reporter.log("In onRetryProcessException()" + e);
+	    	logger.info("In onRetryProcessException()" + e);
 	    	jobCtx.setExitStatus("Retry listener invoked");
 	    }
 }

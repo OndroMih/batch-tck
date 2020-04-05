@@ -28,16 +28,13 @@ import javax.batch.operations.JobStartException;
 import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
-import org.junit.Before;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.*;
 
 public class JobExecutableSequenceTests {
 
+	private static final Logger logger = Logger.getLogger(JobExecutableSequenceTests.class.getName());
 	private JobOperatorBridge jobOp = null;
 
 	/**
@@ -53,38 +50,38 @@ public class JobExecutableSequenceTests {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testJobExecutableSequenceToUnknown() throws Exception {
 
 		String METHOD = "testJobExecutableSequenceToUnknown";
 
 		try {
 
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = null;
 			boolean seenException = false;
 			try {
 				jobExec = jobOp.startJobAndWaitForResult("job_executable_sequence_invalid", null);
 			} catch (JobStartException e) {
-				Reporter.log("Caught JobStartException:  " + e.getLocalizedMessage());
+				logger.info("Caught JobStartException:  " + e.getLocalizedMessage());
 				seenException = true;
 			}
 			// If we caught an exception we'd expect that a JobExecution would not have been created,
 			// though we won't validate that it wasn't created.  
 			// If we didn't catch an exception that we require that the implementation fail the job execution.
 			if (!seenException) {
-				Reporter.log("Didn't catch JobStartException, Job Batch Status = " + jobExec.getBatchStatus());
+				logger.info("Didn't catch JobStartException, Job Batch Status = " + jobExec.getBatchStatus());
 				assertWithMessage("Job should have failed because of out of scope execution elements.", BatchStatus.FAILED, jobExec.getBatchStatus());
 			}
-			Reporter.log("job failed");
+			logger.info("job failed");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -105,13 +102,12 @@ public class JobExecutableSequenceTests {
 
 	}
 
-	@BeforeTest
-	@Before
+	@BeforeEach
 	public void beforeTest() throws ClassNotFoundException {
 		jobOp = new JobOperatorBridge(); 
 	}
 
-	@AfterTest
+	@AfterEach
 	public void afterTest() {
 		jobOp = null;
 	}

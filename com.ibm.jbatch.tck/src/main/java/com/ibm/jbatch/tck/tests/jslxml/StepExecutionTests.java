@@ -37,40 +37,25 @@ import com.ibm.jbatch.tck.artifacts.reusable.MyBatchletImpl;
 import com.ibm.jbatch.tck.artifacts.reusable.MyPersistentUserData;
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
 
-import org.junit.BeforeClass;
-import org.testng.Reporter;
-import org.testng.annotations.AfterClass;
-import org.testng.annotations.BeforeMethod;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.*;
 
 public class StepExecutionTests {
 
 	private final static Logger logger = Logger.getLogger(StepExecutionTests.class.getName());
 
-	private static JobOperatorBridge jobOp;
+	private JobOperatorBridge jobOp;
 
-	public static void setup(String[] args, Properties props) throws Exception {
-		String METHOD = "setup";
-
-		try {
-			jobOp = new JobOperatorBridge();
-		} catch (Exception e) {
-			handleException(METHOD, e);
-		}
-	}
-
-	@BeforeMethod
-	@BeforeClass
-	public static void setUp()throws Exception {
+	@BeforeEach
+	public void setUp()throws Exception {
 		jobOp = new JobOperatorBridge();
 	}
 
-	@AfterClass
+	@AfterAll
 	public static void cleanup() throws Exception {
 	}
 
 	private void begin(String str) {
-		Reporter.log("Begin test method: " + str + "<p>");
+		logger.info("Begin test method: " + str + "<p>");
 	}
 
 	/*
@@ -79,19 +64,19 @@ public class StepExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testOneStepExecutionStatus() throws Exception {
 
 		String METHOD = "testOneStepExecutionStatus";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_1step.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_1step.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_1step");
 
-			Reporter.log("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
+			logger.info("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
 			List<StepExecution> steps = jobOp.getStepExecutions(jobExec.getExecutionId());
 
 			assertObjEquals(1, steps.size());
@@ -99,11 +84,11 @@ public class StepExecutionTests {
 			for (StepExecution step : steps) {
 				// make sure all steps finish successfully
 				showStepState(step);
-				Reporter.log("Step status = " + step.getBatchStatus() + "<p>");
+				logger.info("Step status = " + step.getBatchStatus() + "<p>");
 				assertObjEquals(BatchStatus.COMPLETED, step.getBatchStatus());
 			}
 
-			Reporter.log("Job execution status = " + jobExec.getBatchStatus() + "<p>");
+			logger.info("Job execution status = " + jobExec.getBatchStatus() + "<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -117,19 +102,19 @@ public class StepExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testFourStepExecutionStatus() throws Exception {
 
 		String METHOD = "testFourStepExecutionStatus";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_4steps.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_4steps.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_4steps");
 
-			Reporter.log("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
+			logger.info("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
 			List<StepExecution> steps = jobOp.getStepExecutions(jobExec.getExecutionId());
 			assertObjEquals(4, steps.size());
 
@@ -137,14 +122,14 @@ public class StepExecutionTests {
 			for (StepExecution step : steps) {
 				// check that each step completed successfully
 				showStepState(step);
-				Reporter.log("Step status = " + step.getBatchStatus() + "<p>");
+				logger.info("Step status = " + step.getBatchStatus() + "<p>");
 				assertObjEquals(BatchStatus.COMPLETED, step.getBatchStatus());
 				
 				// Let's also make sure all four have unique IDs, to make sure the JobExecution id isn't being used say
 				assertWithMessage("New StepExecution id", !stepExecutionsSeen.contains(step.getStepExecutionId()));
 				stepExecutionsSeen.add(step.getStepExecutionId());
 			}
-			Reporter.log("Job execution status = " + jobExec.getBatchStatus() + "<p>");
+			logger.info("Job execution status = " + jobExec.getBatchStatus() + "<p>");
 			assertObjEquals(BatchStatus.COMPLETED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -157,18 +142,18 @@ public class StepExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testFailedStepExecutionStatus() throws Exception {
 		String METHOD = "testFailedStepExecutionStatus";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_failElement.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_failElement.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_failElement");
 
-			Reporter.log("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
+			logger.info("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
 			List<StepExecution> steps = jobOp.getStepExecutions(jobExec.getExecutionId());
 			assertObjEquals(1, steps.size());
 			for (StepExecution step : steps) {
@@ -177,8 +162,8 @@ public class StepExecutionTests {
 				showStepState(step);
 			}
 
-			Reporter.log("Job execution getExitStatus()="+jobExec.getExitStatus()+"<p>");
-			Reporter.log("Job execution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("Job execution getExitStatus()="+jobExec.getExitStatus()+"<p>");
+			logger.info("Job execution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals("TEST_FAIL", jobExec.getExitStatus());
 			assertObjEquals(BatchStatus.FAILED, jobExec.getBatchStatus());
 		} catch (Exception e) {
@@ -192,18 +177,18 @@ public class StepExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testStoppedStepExecutionStatus() throws Exception {
 		String METHOD = "testStoppedStepExecutionStatus";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_stopElement.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_stopElement.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_stopElement");
 
-			Reporter.log("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
+			logger.info("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
 			List<StepExecution> steps = jobOp.getStepExecutions(jobExec.getExecutionId());
 			assertObjEquals(1, steps.size());
 			for (StepExecution step : steps) {
@@ -212,7 +197,7 @@ public class StepExecutionTests {
 				showStepState(step);
 			}
 
-			Reporter.log("Job execution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("Job execution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.STOPPED, jobExec.getBatchStatus());
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -225,37 +210,37 @@ public class StepExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test 
+ 
 	public void testPersistedStepData() throws Exception {
 		String METHOD = "testPersistedStepData";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_persistedData.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_persistedData.xml<p>");
 
-			Reporter.log("Create job parameters for execution #1:<p>");
+			logger.info("Create job parameters for execution #1:<p>");
 			Properties jobParameters = new Properties();
-			Reporter.log("force.failure=true<p>");
+			logger.info("force.failure=true<p>");
 			jobParameters.setProperty("force.failure" , "true");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_persistedData", jobParameters);
 
-			Reporter.log("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 JobExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.FAILED, jobExec.getBatchStatus());
 
 			//This job should only have one step.
-			Reporter.log("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
+			logger.info("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
 			List<StepExecution> steps = jobOp.getStepExecutions(jobExec.getExecutionId());
 			StepExecution stepExec = steps.get(0);
 			assertObjEquals(1, steps.size());
 
-			Reporter.log("execution #1 StepExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 StepExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.FAILED, stepExec.getBatchStatus());
 			assertObjEquals(4, ((MyPersistentUserData)stepExec.getPersistentUserData()).getData());
 
 			//jobParameters.setProperty("force.failure" , "false");
-			Reporter.log("Invoke restartJobAndWaitForResult with execution id: " + jobExec.getExecutionId() + "<p>");
+			logger.info("Invoke restartJobAndWaitForResult with execution id: " + jobExec.getExecutionId() + "<p>");
 			JobExecution restartedJobExec = jobOp.restartJobAndWaitForResult(jobExec.getExecutionId(),jobParameters);
 
 			//This job should only have one step.
@@ -263,7 +248,7 @@ public class StepExecutionTests {
 			steps = jobOp.getStepExecutions(restartedJobExec.getExecutionId());
 			stepExec = steps.get(0);
 
-			Reporter.log("execution #1 StepExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
+			logger.info("execution #1 StepExecution getBatchStatus()="+jobExec.getBatchStatus()+"<p>");
 			assertObjEquals(BatchStatus.COMPLETED, stepExec.getBatchStatus());
 			assertObjEquals(5, ((MyPersistentUserData)stepExec.getPersistentUserData()).getData());		
 
@@ -280,18 +265,18 @@ public class StepExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testStepExecutionExitStatus() throws Exception {
 		String METHOD = "testStepExecutionExitStatus";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_failElement.xml<p>");
+			logger.info("Locate job XML file: job_batchlet_failElement.xml<p>");
 
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_batchlet_failElement");
 
-			Reporter.log("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
+			logger.info("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
 			List<StepExecution> steps = jobOp.getStepExecutions(jobExec.getExecutionId());
 			assertObjEquals(1, steps.size());
 			
@@ -299,8 +284,8 @@ public class StepExecutionTests {
 			showStepState(step);
 			assertWithMessage("Check step exit status", MyBatchletImpl.GOOD_EXIT_STATUS, step.getExitStatus());
 			assertWithMessage("Check step batch status", BatchStatus.COMPLETED, step.getBatchStatus());
-			Reporter.log("Job batch status =" + jobExec.getBatchStatus() + "<p>");
-			Reporter.log("Job exit status =" + jobExec.getExitStatus() + "<p>");
+			logger.info("Job batch status =" + jobExec.getBatchStatus() + "<p>");
+			logger.info("Job exit status =" + jobExec.getExitStatus() + "<p>");
 			assertWithMessage("Check job batch status", BatchStatus.FAILED, jobExec.getBatchStatus());
 			assertWithMessage("Check job exit status", "TEST_FAIL", jobExec.getExitStatus());
 		} catch (Exception e) {
@@ -314,17 +299,17 @@ public class StepExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testStepInFlowStepExecution() throws Exception {
 		String METHOD = "testStepInFlowStepExecution";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: job_batchlet_failElement.xml<p>");
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Locate job XML file: job_batchlet_failElement.xml<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("flow_transition_to_step");
 
-			Reporter.log("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
+			logger.info("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
 			List<StepExecution> steps = jobOp.getStepExecutions(jobExec.getExecutionId());
 			assertObjEquals(4, steps.size());
 			for (StepExecution step : steps) {
@@ -335,8 +320,8 @@ public class StepExecutionTests {
 			}
 
 			// Now check job level status
-			Reporter.log("Job batch status =" + jobExec.getBatchStatus() + "<p>");
-			Reporter.log("Job exit status =" + jobExec.getExitStatus() + "<p>");
+			logger.info("Job batch status =" + jobExec.getBatchStatus() + "<p>");
+			logger.info("Job exit status =" + jobExec.getExitStatus() + "<p>");
 			assertWithMessage("Check job batch status", BatchStatus.COMPLETED, jobExec.getBatchStatus());
 			assertWithMessage("Check job exit status", "flow1step1, flow1step2, flow1step3, step1", jobExec.getExitStatus());
 
@@ -351,21 +336,21 @@ public class StepExecutionTests {
 	 * @test_Strategy: FIXME
 	 */
 	@Test
-	@org.junit.Test  
+  
 	public void testStepInFlowInSplitStepExecution() throws Exception {
 		String METHOD = "testStepInFlowInSplitStepExecution";
 		begin(METHOD);
 
 		try {
-			Reporter.log("Locate job XML file: split_batchlet_4steps.xml<p>");
-			Reporter.log("Invoke startJobAndWaitForResult for execution #1<p>");
+			logger.info("Locate job XML file: split_batchlet_4steps.xml<p>");
+			logger.info("Invoke startJobAndWaitForResult for execution #1<p>");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("split_batchlet_4steps");
 			
 			// Saves debugging time to check these two first in case they fail
 			assertWithMessage("Check job batch status", BatchStatus.COMPLETED, jobExec.getBatchStatus());
 			assertWithMessage("Check job exit status", "COMPLETED", jobExec.getExitStatus());
 
-			Reporter.log("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
+			logger.info("Obtaining StepExecutions for execution id: " + jobExec.getExecutionId() + "<p>");
 			List<StepExecution> steps = jobOp.getStepExecutions(jobExec.getExecutionId());
 			assertObjEquals(4, steps.size());
 			for (StepExecution step : steps) {
@@ -374,8 +359,8 @@ public class StepExecutionTests {
 				assertWithMessage("Check step exit status", MyBatchletImpl.GOOD_EXIT_STATUS, step.getExitStatus());
 				assertWithMessage("Check step batch status", BatchStatus.COMPLETED, step.getBatchStatus());
 			}
-			Reporter.log("Job batch status =" + jobExec.getBatchStatus() + "<p>");
-			Reporter.log("Job exit status =" + jobExec.getExitStatus() + "<p>");
+			logger.info("Job batch status =" + jobExec.getBatchStatus() + "<p>");
+			logger.info("Job exit status =" + jobExec.getExitStatus() + "<p>");
 
 		} catch (Exception e) {
 			handleException(METHOD, e);
@@ -383,25 +368,25 @@ public class StepExecutionTests {
 	}
 
 	private void showStepState(StepExecution step) {
-		Reporter.log("---------------------------<p>");
-		Reporter.log("getStepName(): " + step.getStepName() + " - ");
-		Reporter.log("getStepExecutionId(): " + step.getStepExecutionId() + " - ");
+		logger.info("---------------------------<p>");
+		logger.info("getStepName(): " + step.getStepName() + " - ");
+		logger.info("getStepExecutionId(): " + step.getStepExecutionId() + " - ");
 		Metric[] metrics = step.getMetrics();
 
 		for (int i = 0; i < metrics.length; i++) {
-			Reporter.log(metrics[i].getType() + ": " + metrics[i].getValue() + " - ");
+			logger.info(metrics[i].getType() + ": " + metrics[i].getValue() + " - ");
 		}
 
-		Reporter.log("getStartTime(): " + step.getStartTime() + " - ");
-		Reporter.log("getEndTime(): " + step.getEndTime() + " - ");
-		Reporter.log("getBatchStatus(): " + step.getBatchStatus() + " - ");
-		Reporter.log("getExitStatus(): " + step.getExitStatus()+"<p>");
-		Reporter.log("---------------------------<p>");
+		logger.info("getStartTime(): " + step.getStartTime() + " - ");
+		logger.info("getEndTime(): " + step.getEndTime() + " - ");
+		logger.info("getBatchStatus(): " + step.getBatchStatus() + " - ");
+		logger.info("getExitStatus(): " + step.getExitStatus()+"<p>");
+		logger.info("---------------------------<p>");
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 

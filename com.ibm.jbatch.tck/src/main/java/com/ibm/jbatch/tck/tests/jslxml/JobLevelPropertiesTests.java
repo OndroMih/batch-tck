@@ -28,15 +28,13 @@ import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
 
-import org.junit.Before;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
+import org.junit.jupiter.api.*;
 
 public class JobLevelPropertiesTests {
 
+	private static final Logger logger = Logger.getLogger(JobLevelPropertiesTests.class.getName());
 	private JobOperatorBridge jobOp = null;
 	
 	private String FOO_VALUE = "bar";
@@ -52,7 +50,7 @@ public class JobLevelPropertiesTests {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testJobLevelPropertiesCount() throws Exception {
 		
 		String METHOD = "testJobLevelPropertiesCount";
@@ -61,13 +59,13 @@ public class JobLevelPropertiesTests {
 		jobParams.put(SHOULD_BE_UNAVAILABLE_PROP_PREFIX + ".parm1", "should.not.appear.in.job.context.properties");
 		
 		try {
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_level_properties_count", jobParams);
 	
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
 			assertWithMessage("Job completed", "VERY GOOD INVOCATION", jobExec.getExitStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 			
 		} catch (Exception e) {
             handleException(METHOD, e);
@@ -83,23 +81,23 @@ public class JobLevelPropertiesTests {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testJobLevelPropertiesPropertyValue() throws Exception {
 		
 		String METHOD = "testJobLevelPropertiesPropertyValue";
 
 
 		try {
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_level_properties_value");
 	
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());			
-			Reporter.log("job completed");
+			logger.info("job completed");
 			
 			assertWithMessage("Property value", FOO_VALUE, jobExec.getExitStatus());
 			
-			Reporter.log("Job batchlet return code is the job property foo value " + FOO_VALUE);
+			logger.info("Job batchlet return code is the job property foo value " + FOO_VALUE);
 		} catch (Exception e) {
             handleException(METHOD, e);
         }
@@ -112,29 +110,29 @@ public class JobLevelPropertiesTests {
 	 * 
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testJobLevelPropertiesShouldNotBeAvailableThroughStepContext() throws Exception {
 		
 		String METHOD = "testJobLevelPropertiesShouldNotBeAvailableThroughStepContext";
 		
 		try {
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("job_level_properties_scope");
 	
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("job completed");
+			logger.info("job completed");
 			
 			assertWithMessage("Job Level Property is not available through step context", BatchStatus.COMPLETED.name(), jobExec.getExitStatus());
-			Reporter.log("Job batchlet return code is the job.property read through step context (expected value=COMPLETED) " + jobExec.getExitStatus());
+			logger.info("Job batchlet return code is the job.property read through step context (expected value=COMPLETED) " + jobExec.getExitStatus());
 		} catch (Exception e) {
             handleException(METHOD, e);
         }
 	}
 	
 	 private static void handleException(String methodName, Exception e) throws Exception {
-	        Reporter.log("Caught exception: " + e.getMessage() + "<p>");
-	        Reporter.log(methodName + " failed<p>");
+	        logger.info("Caught exception: " + e.getMessage() + "<p>");
+	        logger.info(methodName + " failed<p>");
 	        throw e;
 	    }
 	 
@@ -155,14 +153,13 @@ public class JobLevelPropertiesTests {
 		
 		}
 
-	@BeforeTest
-    @Before
+	@BeforeEach
 	public void beforeTest() throws ClassNotFoundException {
 		jobOp = new JobOperatorBridge();
 		
 	}
 
-	@AfterTest
+	@AfterEach
 	public void afterTest() {
 		jobOp = null;
 	}

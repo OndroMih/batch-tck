@@ -28,16 +28,13 @@ import javax.batch.operations.JobStartException;
 import javax.batch.runtime.BatchStatus;
 import javax.batch.runtime.JobExecution;
 
-import org.junit.Before;
-import org.testng.Reporter;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
-import org.testng.annotations.Test;
-
 import com.ibm.jbatch.tck.utils.JobOperatorBridge;
+import java.util.logging.Logger;
+import org.junit.jupiter.api.*;
 
 public class FlowTransitioningTests {
 
+	private static final Logger logger = Logger.getLogger(FlowTransitioningTests.class.getName());
 	private JobOperatorBridge jobOp = null;
 
 	/**
@@ -55,7 +52,7 @@ public class FlowTransitioningTests {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testFlowTransitionToStep() throws Exception {
 
 		String METHOD = "testFlowTransitionToStep";
@@ -63,9 +60,9 @@ public class FlowTransitioningTests {
 		try {
 
 			String[] transitionList = {"flow1step1", "flow1step2", "flow1step3", "step1"};
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("flow_transition_to_step", null);
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 
 			String[] jobTransitionList = jobExec.getExitStatus().split(",");
 			assertWithMessage("transitioned to exact number of steps", transitionList.length, jobTransitionList.length);
@@ -74,7 +71,7 @@ public class FlowTransitioningTests {
 			}
 
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("Job completed");
+			logger.info("Job completed");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
@@ -111,19 +108,19 @@ public class FlowTransitioningTests {
 	 * @throws InterruptedException
 	 */
 	@Test
-	@org.junit.Test
+
 	public void testFlowTransitionToStepOutOfScope() throws Exception {
 
 		String METHOD = " testFlowTransitionToStepOutOfScope";
 
 		try {
 			boolean seenException = false;
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = null;
 			try {
 				jobExec = jobOp.startJobAndWaitForResult("flow_transition_to_step_out_of_scope", null);
 			} catch (JobStartException e) {
-				Reporter.log("Caught JobStartException:  " + e.getLocalizedMessage());
+				logger.info("Caught JobStartException:  " + e.getLocalizedMessage());
 				seenException = true;
 			}
 
@@ -132,7 +129,7 @@ public class FlowTransitioningTests {
 
 			// If we didn't catch an exception that we require that the implementation fail the job execution.
 			if (!seenException) {
-				Reporter.log("Didn't catch JobStartException, Job Batch Status = " + jobExec.getBatchStatus());
+				logger.info("Didn't catch JobStartException, Job Batch Status = " + jobExec.getBatchStatus());
 				assertWithMessage("Job should have failed because of out of scope execution elements.", 
 						BatchStatus.FAILED, jobExec.getBatchStatus());
 			}
@@ -154,7 +151,7 @@ public class FlowTransitioningTests {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testFlowTransitionToDecision() throws Exception {
 
 		String METHOD = "testFlowTransitionToDecision";
@@ -167,13 +164,13 @@ public class FlowTransitioningTests {
 				<end exit-status="ThatsAllFolks" on="DECIDER_EXIT_STATUS*VERY GOOD INVOCATION" />
 			</decision>
 			 */
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("flow_transition_to_decision", null);
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 
 			assertWithMessage("Job Exit Status is from decider", exitStatus, jobExec.getExitStatus());
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("Job completed");
+			logger.info("Job completed");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
@@ -195,16 +192,16 @@ public class FlowTransitioningTests {
 	 * @throws IOException
 	 * @throws InterruptedException
 	 */
-	@Test @org.junit.Test
+	@Test
 	public void testFlowTransitionWithinFlow() throws Exception {
 
 		String METHOD = "testFlowTransitionWithinFlow";
 
 		try {
 			String[] transitionList = {"flow1step1", "flow1step2", "flow1step3"};
-			Reporter.log("starting job");
+			logger.info("starting job");
 			JobExecution jobExec = jobOp.startJobAndWaitForResult("flow_transition_within_flow", null);
-			Reporter.log("Job Status = " + jobExec.getBatchStatus());
+			logger.info("Job Status = " + jobExec.getBatchStatus());
 
 			String[] jobTransitionList = jobExec.getExitStatus().split(",");
 			assertWithMessage("transitioned to exact number of steps", transitionList.length, jobTransitionList.length);
@@ -213,15 +210,15 @@ public class FlowTransitioningTests {
 			}
 
 			assertWithMessage("Job completed", BatchStatus.COMPLETED, jobExec.getBatchStatus());
-			Reporter.log("Job completed");
+			logger.info("Job completed");
 		} catch (Exception e) {
 			handleException(METHOD, e);
 		}
 	}
 
 	private static void handleException(String methodName, Exception e) throws Exception {
-		Reporter.log("Caught exception: " + e.getMessage()+"<p>");
-		Reporter.log(methodName + " failed<p>");
+		logger.info("Caught exception: " + e.getMessage()+"<p>");
+		logger.info(methodName + " failed<p>");
 		throw e;
 	}
 
@@ -242,13 +239,12 @@ public class FlowTransitioningTests {
 
 	}
 
-	@BeforeTest
-	@Before
+	@BeforeEach
 	public void beforeTest() throws ClassNotFoundException {
 		jobOp = new JobOperatorBridge(); 
 	}
 
-	@AfterTest
+	@AfterEach
 	public void afterTest() {
 		jobOp = null;
 	}
