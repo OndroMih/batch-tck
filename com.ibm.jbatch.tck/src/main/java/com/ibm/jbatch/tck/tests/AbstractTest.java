@@ -8,7 +8,7 @@ import org.jboss.shrinkwrap.resolver.api.maven.*;
 
 public class AbstractTest extends Arquillian {
 
-    @Deployment
+//    @Deployment
     public static WebArchive createTestArchive() {
         MavenResolvedArtifact[] resolvedArtifacts = Maven.resolver().loadPomFromFile("pom.xml")
                 .importDependencies(ScopeType.COMPILE, ScopeType.TEST)
