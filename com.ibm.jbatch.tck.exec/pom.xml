@@ -16,7 +16,7 @@
    limitations under the License.
 
    SPDX-License-Identifier: Apache-2.0
--->
+ -->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -161,10 +161,11 @@
                         <configuration>
                             <suiteXmlFiles>
                                 <!-- Not sure how to reference the suite XML file within the dependency artifact, so rely on an unpacking first.-->
-                                <!--<suiteXmlFile>${project.build.directory}/test-classes/testng/batch-tck-impl-SE-suite.xml</suiteXmlFile>-->
+                                <suiteXmlFile>${project.build.directory}/test-classes/testng/batch-tck-impl-SE-suite.xml</suiteXmlFile>
                                 <!-- For debugging -->
-                                
+                                <!--
                                 <suiteXmlFile>${project.basedir}/testng.suite.xml</suiteXmlFile>
+-->
 
                             </suiteXmlFiles>
                             <systemPropertiesFile>${project.basedir}/test.properties</systemPropertiesFile>
